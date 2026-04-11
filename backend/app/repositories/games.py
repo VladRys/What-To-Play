@@ -1,12 +1,14 @@
 from backend.app.db.database import SqliteDatabase
 
+from backend.app.config import config as cfg
+
 class GamesRepository:
     def __init__(self, db: SqliteDatabase):
         self.db = db
         self.create_table()
 
     def create_table(self):
-        with open("app/db/models.sql") as f:
+        with open(cfg.GAME_REPOSITORY_MODEL_PATH) as f:
             self.db.execute(f.read())
 
     def add_game(self, game: dict):

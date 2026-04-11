@@ -36,5 +36,5 @@ def get_owned_games_api(steam_id: str):
 
 @app.get("/random")
 def random_game():
-    game = repo.get_random()
-    return {"game": game}
+    game = repo.get_random() or {}
+    return {"game": game, "header_image": f"https://cdn.akamai.steamstatic.com/steam/apps/{game["appid"]}/header.jpg"}
