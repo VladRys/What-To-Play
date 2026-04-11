@@ -722,6 +722,39 @@ h2 {
     filter: brightness(0) invert(1);
 }
 
+.action-btn.dont-care-btn {
+    border: 1px solid linear-gradient(135deg, #8b5cf6, #00f0ff);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+    position: relative;
+}
+
+.action-btn.dont-care-btn::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(135deg, #8b5cf6, #00f0ff);
+    border-radius: 16px;
+    z-index: -1;
+    opacity: 0.6;
+}
+
+.action-btn.dont-care-btn:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3), 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+.action-btn.dont-care-btn:hover::before {
+    opacity: 1;
+}
+
+.action-btn.dont-care-btn .icon-wrapper {
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.action-btn.dont-care-btn:hover .icon-wrapper {
+    background: rgba(139, 92, 246, 0.2);
+}
+
 .floating-particles {
     position: fixed;
     top: 0;
