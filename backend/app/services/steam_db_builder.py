@@ -1,0 +1,81 @@
+import requests
+import time
+
+class SteamBuilder:
+    def __init__(self, repo):
+        self.repo = repo
+
+    def get_apps(self, api_key):
+        url = "https://api.steampowered.com/IStoreService/GetAppList/v1/"
+        return requests.get(url, params={"key": api_key}).json()["response"]["apps"]
+
+    def get_details(self, appid):
+        url = f"https://store.steampowered.com/api/appdetails?appids={appid}"
+        r = requests.get(url).json()
+
+        if not r[str(appid)]["success"]:
+            return None
+
+        d = r[str(appid)]["data"]
+
+        if d.get("type") != "game":
+            return None
+
+        return {
+            "appid": appid,
+            "name": d.get("name"),
+            "genres": ",".join([g["description"] for g in d.get("genres", [])]),
+            "categories": ",".join([c["description"] for c in d.get("categories", [])]),
+            "is_free": int(d.get("is_free", False)),
+            "positive": 0,
+            "negative": 0
+        }
+
+    def get_reviews(self, appid):
+        url = f"https://store.steampowered.com/appreviews/{appid}?json=1&num_per_page=0"
+
+        headers = {
+            "User-Agent": "Mozilla/5.0"
+        }
+
+        try:
+            r = requests.get(url, headers=headers, timeout=10)
+
+            if r.status_code != 200:
+                print("Bad status:", r.status_code)
+                return (0, 0)
+
+            data = r.json()
+            summary = data.get("query_summary", {})
+
+            return (
+                summary.get("total_positive", 0),
+                summary.get("total_negative", 0)
+            )
+
+        except Exception as e:
+            print("Error:", e)
+            return (0, 0)
+
+    def build(self, api_key, limit=500):
+        apps = self.get_apps(api_key)
+
+        for i, app in enumerate(apps[:limit]):
+            try:
+                data = self.get_details(app["appid"]) or {}
+                pos, neg = self.get_reviews(app["appid"])
+
+                data["positive"] = pos
+                data["negative"] = neg
+            except Exception as e:
+                print(f"Error processing game ID {app['appid']}: {str(e)}")
+                continue
+
+            if data:
+                self.repo.add_game(data)
+
+            if i % 50 == 0:
+                print(f"Processed {i}")
+
+            time.sleep(0.3)
+            
