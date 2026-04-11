@@ -212,7 +212,7 @@ $(document).ready(function () {
         const gameCard = `
           <div class="game-card">
             <div class="game-banner">
-              <img src="img/testimg" alt="Game Banner">
+              <img src="img/testimg.png" alt="Game Banner">
             </div>
             <div class="game-info">
               <h3 class="game-title">${game.name || 'Unknown Game'}</h3>
