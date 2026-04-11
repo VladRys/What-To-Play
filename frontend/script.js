@@ -208,11 +208,12 @@ $(document).ready(function () {
       .then(r => r.json())
       .then(data => {
         const game = data.game || {};
+        const Image = data.header_image || 'img/testimg.png';
         const genres = game.genres || 'Unknown Genre';
         const gameCard = `
           <div class="game-card">
             <div class="game-banner">
-              <img src="img/testimg.png" alt="Game Banner">
+              <img src="${Image}" alt="Game Banner">
             </div>
             <div class="game-info">
               <h3 class="game-title">${game.name || 'Unknown Game'}</h3>
