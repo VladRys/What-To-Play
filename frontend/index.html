@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatToPlay</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
+    <script src="https://code.jquery.com/jquery-4.0.0.min.js" integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="topo-noise"></div>
+    <div class="floating-particles"></div>
+    <div class="container">
+        <header>
+            <h1><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;"><path fill="#8b5cf6" d="m12 10.5l-3-3V2h6v5.5zm4.5 4.5l-3-3l3-3H22v6zM2 15V9h5.5l3 3l-3 3zm7 7v-5.5l3-3l3 3V22zm3-14.35l1-1V4h-2v2.65zM4 13h2.65l1-1l-1-1H4zm7 7h2v-2.65l-1-1l-1 1zm6.35-7H20v-2h-2.65l-1 1z"/></svg> WhatToPlay</h1>
+            <p class="subtitle" data-translate="subtitle">What To Play Today</p>
+            <div class="language-selector">
+                <button class="lang-btn active" data-lang="en">
+                    <span class="flag">en</span>
+                </button>
+                <button class="lang-btn" data-lang="ru">
+                    <span class="flag">ru</span>
+                </button>
+                <button class="lang-btn" data-lang="uk">
+                    <span class="flag">uk</span>
+                </button>
+            </div>
+        </header>
+        
+        <main>
+            <section class="question-section">
+                <div class="question-header">
+                    <span class="icon time-icon"><img src="img/fa-clock.svg"></span>
+                    <h2 data-translate="time-question">How much time you have to play?</h2>
+                </div>
+                <div class="button-group">
+                    <button class="option-btn" data-translate="time-30min"><span class="icon-wrapper"><img src="img/fa-clock.svg"></span>30 min</button>
+                    <button class="option-btn" data-translate="time-1-2hrs"><span class="icon-wrapper"><img src="img/fa-hourglass.svg"></span>1-2 hours</button>
+                    <button class="option-btn" data-translate="time-long"><span class="icon-wrapper"><img src="img/fa-infinity.svg"></span>A long while</button>
+                </div>
+            </section>
+
+            <section class="question-section">
+                <div class="question-header">
+                    <span class="icon mood-icon"><img src="img/fa-heart.svg"></span>
+                    <h2 data-translate="mood-question">Mood?</h2>
+                </div>
+                <div class="button-group">
+                    <button class="option-btn" data-translate="mood-chill"><span class="icon-wrapper"><img src="img/fa-heart.svg"></span>Chill (Hui DrochiLL)</button>
+                    <button class="option-btn" data-translate="mood-sweat"><span class="icon-wrapper"><img src="img/fa-bolt.svg"></span>Sweat</button>
+                    <button class="option-btn clock-btn" data-translate="mood-think"><span class="icon-wrapper"><img src="img/fa-brain.svg"></span>Think</button>
+                </div>
+            </section>
+
+            <section class="question-section">
+                <div class="question-header">
+                    <span class="icon single-icon"><img src="img/fa-user.svg"></span>
+                    <h2 data-translate="mode-question">Single?</h2>
+                </div>
+                <div class="button-group">
+                    <button class="option-btn" data-translate="mode-solo"><span class="icon-wrapper"><img src="img/fa-user.svg"></span>Solo</button>
+                    <button class="option-btn" data-translate="mode-friends"><span class="icon-wrapper"><img src="img/fa-user-group.svg"></span>With friends</button>
+                </div>
+            </section>
+            
+            <div class="action-buttons">
+                <button class="action-btn primary" id="findGames" data-translate="find-games"><span class="icon-wrapper"><img src="img/fa-magnifying-glass.svg"></span>Find games</button>
+                <button class="action-btn" id="reset" data-translate="reset"><span class="icon-wrapper"><img src="img/fa-rotate-right.svg"></span>Reset</button>
+            </div>
+            
+            <div class="game-result" id="gameResult">
+                <div class="game-card">
+                    <div class="game-banner">
+                        <img src="img/darksouls.png" alt="Game Banner">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">Dark Souls Remastered</h3>
+                        <p class="game-genre">Hardcore Action</p>
+                        <div class="game-meta">
+                            <span class="game-time">1-3 hours</span>
+                            <span class="game-difficulty">Hard</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-banner">
+                        <img src="img/darksouls.png" alt="Game Banner">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">Dark Souls Remastered</h3>
+                        <p class="game-genre">Hardcore Action</p>
+                        <div class="game-meta">
+                            <span class="game-time">1-3 hours</span>
+                            <span class="game-difficulty">Hard</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-banner">
+                        <img src="img/darksouls.png" alt="Game Banner">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">Dark Souls Remastered</h3>
+                        <p class="game-genre">Hardcore Action</p>
+                        <div class="game-meta">
+                            <span class="game-time">1-3 hours</span>
+                            <span class="game-difficulty">Hard</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+<script src="script.js"></script>
+</html>
