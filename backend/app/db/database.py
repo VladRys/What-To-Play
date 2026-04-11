@@ -2,6 +2,7 @@ import sqlite3
 
 
 class SqliteDatabase:
+    """Simple wrapper around sqlite3 to manage database connections and queries"""
     def __init__(self, db_path: str):
         self.db_path = db_path
         self.connection = sqlite3.connect(self.db_path, check_same_thread=False)
