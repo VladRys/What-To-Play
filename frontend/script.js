@@ -228,7 +228,8 @@ $(document).ready(function () {
         const categories = game.categories || '';
         const isMultiplayer = categories.toLowerCase().includes('multi-player');
         const gameCard = `
-          <div class="game-card">
+          <div class="game-card" style="opacity: 0; transform: translateY(30px); filter: blur(10px);">
+            <div class="glow"></div>
             <div class="game-banner">
               <img src="${Image}" alt="Game Banner">
             </div>
@@ -243,7 +244,18 @@ $(document).ready(function () {
             </div>
           </div>
         `;
-        $('#gameResult').html(gameCard).show();
+        const $card = $(gameCard);
+        $('#gameResult').html($card).show();
+
+        // Animate card appearance
+        setTimeout(() => {
+          $card.css({
+            opacity: 1,
+            transform: 'translateY(0)',
+            filter: 'blur(0px)',
+            transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
+          });
+        }, 50);
       })
       .catch(error => {
         showErrorPopup(translations[currentLang]['server-error']);
@@ -356,7 +368,7 @@ $(document).ready(function () {
       const isMultiplayer = categories.toLowerCase().includes('multi-player');
 
       const $card = $(`
-        <div class="game-card" style="opacity: 0; transform: translateY(30px);">
+        <div class="game-card" style="opacity: 0; transform: translateY(30px); filter: blur(10px);">
           <div class="glow"></div>
           <div class="game-banner">
             <img src="${Image}" alt="Game Banner">
@@ -380,6 +392,7 @@ $(document).ready(function () {
         $card.css({
           opacity: 1,
           transform: 'translateY(0)',
+          filter: 'blur(0px)',
           transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
         });
 
