@@ -36,7 +36,15 @@ class SteamUserService:
         self.logger.error(f"Failed to resolve vanity URL '{vanity_url}'")
         return None
 
-    def get_owned_games(self, steam_id: str) -> list[dict]:
+    def get_owned_games_by_vanity_url(self, vanity_url: str) -> list[dict]:
+        """Fetch owned games for a given vanity URL using Steam API"""
+        steam_id = self.get_steam_id_from_vanity_url(vanity_url)
+        if steam_id is None:
+            return []
+        
+        return self.get_owned_games_by_steam_id(steam_id)
+
+    def get_owned_games_by_steam_id(self, steam_id: str) -> list[dict]:
         """Fetch owned games for a given Steam ID using Steam API"""
         
         url = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/"
