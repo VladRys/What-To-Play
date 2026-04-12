@@ -210,6 +210,8 @@ $(document).ready(function () {
         const game = data.game || {};
         const Image = data.header_image || 'img/testimg.png';
         const genres = game.genres || 'Unknown Genre';
+        const categories = game.categories || '';
+        const isMultiplayer = categories.toLowerCase().includes('multi-player');
         const gameCard = `
           <div class="game-card">
             <div class="game-banner">
@@ -221,6 +223,7 @@ $(document).ready(function () {
               <div class="game-meta">
                 <span class="game-time">${game.is_free ? 'Free to Play' : 'Paid'}</span>
                 <span class="game-difficulty">${game.positive || 0 > game.negative || 0 ? 'Positive Reviews' : 'Mixed Reviews'}</span>
+                ${isMultiplayer ? '<span class="game-friends">With Friends</span>' : ''}
               </div>
             </div>
           </div>

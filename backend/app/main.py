@@ -36,5 +36,12 @@ def get_owned_games_api(steam_id: str):
 
 @app.get("/random")
 def random_game():
-    game = repo.get_random() or {}
-    return {"game": game, "header_image": f"https://cdn.akamai.steamstatic.com/steam/apps/{game["appid"]}/header.jpg"}
+    game = repo.get_random()
+    if game is None:
+        return {"message": "No games found in the database", "status": 404}
+
+    return {
+        "game": game,
+        "header_image": f"https://cdn.akamai.steamstatic.com/steam/apps/{game['appid']}/header.jpg",
+        "status": 200
+    }
