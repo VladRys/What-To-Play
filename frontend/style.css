@@ -199,6 +199,26 @@ h1 svg {
     filter: drop-shadow(0 0 10px var(--primary));
 }
 
+h1 iconify-icon {
+    vertical-align: middle;
+    margin-right: 8px;
+    font-size: 1em;
+    color: var(--primary);
+    animation: iconColorGradient 5s ease infinite;
+}
+
+@keyframes iconColorGradient {
+    0%, 100% {
+        color: var(--primary);
+    }
+    33% {
+        color: var(--secondary);
+    }
+    66% {
+        color: var(--accent);
+    }
+}
+
 .subtitle {
     font-size: 1.3rem;
     color: rgba(255, 255, 255, 0.6);
@@ -829,6 +849,14 @@ color: rgba(255, 255, 255, 0.3);
     cursor: not-allowed;
 }
 
+.steam-mode-btn {
+    padding: 10px 12px;
+    min-width: auto;
+    font-size: 0.7rem;
+    margin-right: 8px;
+    height: 40px;
+}
+
 .requirements-btn {
     padding: 10px 20px;
     min-width: auto;
@@ -838,6 +866,12 @@ color: rgba(255, 255, 255, 0.3);
     position: relative;
     overflow: hidden;
     isolation: isolate;
+}
+
+.requirements-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .requirements-btn::before {
