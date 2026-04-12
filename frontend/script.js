@@ -1,9 +1,9 @@
 $(document).ready(function () {
   // Translations
   const translations = {
-    en: { subtitle: 'What To Play Today', 'time-question': 'How much time you have to play?', 'time-30min': '30 min', 'time-1-2hrs': '1-2 hours', 'time-long': 'A long while', 'mood-question': 'Mood?', 'mood-chill': 'Chill (Hui DrochiLL)', 'mood-sweat': 'Sweat', 'mood-think': 'Think', 'mode-question': 'Single?', 'mode-solo': 'Solo', 'mode-friends': 'With Friends', 'find-games': 'Find games', 'reset': 'Reset', 'your-game': 'Your game:' },
-    ru: { subtitle: 'Во Что Поиграть Сегодня', 'time-question': 'Сколько времени есть?', 'time-30min': '30 мин', 'time-1-2hrs': '1-2 часа', 'time-long': 'Долго', 'mood-question': 'Настроение?', 'mood-chill': 'Чилл (Хуй дрочиЛЛ)', 'mood-sweat': 'Потеть', 'mood-think': 'Думать', 'mode-question': 'Режим?', 'mode-solo': 'Соло', 'mode-friends': 'С друзьями', 'find-games': 'Найти игры', 'reset': 'Сбросить', 'your-game': 'Твоя игра:' },
-    uk: { subtitle: 'У Що Пограти Сьогодні', 'time-question': 'Скільки часу є?', 'time-30min': '30 хв', 'time-1-2hrs': '1-2 години', 'time-long': 'Довго', 'mood-question': 'Настрій?', 'mood-chill': 'Чілл (Хуй дрочіЛЛ)', 'mood-sweat': 'Потіти (ціцкі тикатИ)', 'mood-think': 'Думати', 'mode-question': 'Режим?', 'mode-solo': 'Соло', 'mode-friends': 'З друзями', 'find-games': 'Знайти ігри', 'reset': 'Скинути', 'your-game': 'Твоя гра:' }
+    en: { subtitle: 'What To Play Today', 'time-question': 'How much time you have to play?', 'time-30min': '30 min', 'time-1-2hrs': '1-2 hours', 'time-long': 'A long while', 'mood-question': 'Mood?', 'mood-chill': 'Chill (Hui DrochiLL)', 'mood-sweat': 'Sweat', 'mood-think': 'Think', 'mode-question': 'Single?', 'mode-solo': 'Solo', 'mode-friends': 'With Friends', 'find-games': 'Find games', 'reset': 'Reset', 'your-game': 'Your game:', 'dont-care': "Don't care", 'server-error': 'Failed to connect to server. Please try again.', 'error-title': 'Error', 'check-requirements': 'Check Requirements', 'steam-placeholder': 'Enter Steam nickname...', 'fetch-library': 'Fetch Library', 'select-game': 'Select a game to check' },
+    ru: { subtitle: 'Во что поиграть сегодня', 'time-question': 'Сколько у тебя времени?', 'time-30min': '30 мин', 'time-1-2hrs': '1-2 часа', 'time-long': 'Долго', 'mood-question': 'Вайб?', 'mood-chill': 'Чилл (Хуи Дрочил)', 'mood-sweat': 'Потеть', 'mood-think': 'Думать', 'mode-question': 'Режим?', 'mode-solo': 'Соло', 'mode-friends': 'С друзьями', 'find-games': 'Найти игры', 'reset': 'Сброс', 'your-game': 'Твоя игра:', 'dont-care': 'Мне похуй', 'server-error': 'Не удалось подключиться к серверу. Попробуйте снова.', 'error-title': 'Ошибка', 'check-requirements': 'Проверить требования', 'steam-placeholder': 'Введите никнейм Steam...', 'fetch-library': 'Загрузить библиотеку', 'select-game': 'Выбери игру для проверки' },
+    uk: { subtitle: 'У Що Пограти Сьогодні', 'time-question': 'Скільки часу є?', 'time-30min': '30 хв', 'time-1-2hrs': '1-2 години', 'time-long': 'Довго', 'mood-question': 'Настрій?', 'mood-chill': 'Чілл (Хуй дрочіЛЛ)', 'mood-sweat': 'Потіти (ціцкі тикатИ)', 'mood-think': 'Думати', 'mode-question': 'Режим?', 'mode-solo': 'Соло', 'mode-friends': 'З друзями', 'find-games': 'Знайти ігри', 'reset': 'Скинути', 'your-game': 'Твоя гра:', 'dont-care': 'Мені похуй', 'server-error': 'Не вдалося підключитися до серверу. Спробуйте ще раз.', 'error-title': 'Помилка', 'check-requirements': 'Перевірити вимоги', 'steam-placeholder': 'Введіть нікнейм Steam...', 'fetch-library': 'Завантажити бібліотеку', 'select-game': 'Вибери гру для перевірки' }
   };
 
   let currentLang = 'en', userState = { time: null, mood: null, single: null }, isResetAnimating = false;
@@ -12,6 +12,18 @@ $(document).ready(function () {
   $('.option-btn, .action-btn').on('mousemove', function (e) {
     const rect = this.getBoundingClientRect();
     $(this).css({ '--mouse-x': ((e.clientX - rect.left) / rect.width) * 100 + '%', '--mouse-y': ((e.clientY - rect.top) / rect.height) * 100 + '%' });
+  });
+
+  // Mouse tracking for requirements button
+  $('#checkRequirements').on('mousemove', function (e) {
+    const rect = this.getBoundingClientRect();
+    $(this).css({ '--mouse-x': ((e.clientX - rect.left) / rect.width) * 100 + '%', '--mouse-y': ((e.clientY - rect.top) / rect.height) * 100 + '%' });
+  });
+
+  // Mouse tracking for game cards (added dynamically)
+  $(document).on('mousemove', '.game-card', function (e) {
+    const rect = this.getBoundingClientRect();
+    $(this).find('.glow').css({ '--mouse-x': ((e.clientX - rect.left) / rect.width) * 100 + '%', '--mouse-y': ((e.clientY - rect.top) / rect.height) * 100 + '%' });
   });
 
   // Ripple effect
@@ -33,7 +45,49 @@ $(document).ready(function () {
       const key = $(this).data('translate');
       if (translations[currentLang]?.[key]) {
         const $icon = $(this).find('.icon-wrapper').clone();
-        texts.push({ el: $(this), curr: $(this).text().trim(), new: translations[currentLang][key], icon: $icon.length ? $icon : '' });
+        const currentWidth = $(this).outerWidth();
+        texts.push({ el: $(this), curr: $(this).text().trim(), new: translations[currentLang][key], icon: $icon.length ? $icon : '', width: currentWidth });
+      }
+    });
+
+    // Handle placeholder translations with typewriter effect
+    $('[data-translate-placeholder]').each(function () {
+      const key = $(this).data('translate-placeholder');
+      if (translations[currentLang]?.[key]) {
+        const $input = $(this);
+        const currentPlaceholder = $input.attr('placeholder') || '';
+        const newPlaceholder = translations[currentLang][key];
+
+        // Typewriter effect for placeholder
+        let i = 0, max = currentPlaceholder.length;
+        const erasePlaceholder = setInterval(() => {
+          if (i >= max) {
+            clearInterval(erasePlaceholder);
+            let j = 0, max2 = newPlaceholder.length;
+            const writePlaceholder = setInterval(() => {
+              if (j >= max2) {
+                clearInterval(writePlaceholder);
+              } else {
+                $input.attr('placeholder', newPlaceholder.substring(0, j + 1));
+                j++;
+              }
+            }, 15);
+          } else {
+            $input.attr('placeholder', currentPlaceholder.substring(0, currentPlaceholder.length - i));
+            i++;
+          }
+        }, 15);
+      }
+    });
+
+    // Apply blur to steam input during translation
+    $('#steamNickname').css({ filter: 'blur(4px)', opacity: 0.5, transition: 'all 0.2s ease' });
+
+    // Set fixed width during translation
+    $els.each(function() {
+      const textData = texts.find(t => t.el[0] === this);
+      if (textData && !$(this).hasClass('subtitle')) {
+        $(this).css('width', textData.width + 'px');
       }
     });
 
@@ -49,8 +103,9 @@ $(document).ready(function () {
           const write = setInterval(() => {
             if (j >= max2) {
               clearInterval(write);
-              $els.css({ filter: 'blur(0)', opacity: 1 });
+              $els.css({ filter: 'blur(0)', opacity: 1, width: '' });
               $('.icon').css({ filter: 'blur(0)', opacity: 1 });
+              $('#steamNickname').css({ filter: 'blur(0)', opacity: 1 });
             } else {
               texts.forEach(t => j < t.new.length && t.el.html(t.icon).append(' ' + t.new.substring(0, j + 1)));
               j++;
@@ -208,11 +263,15 @@ $(document).ready(function () {
       .then(r => r.json())
       .then(data => {
         const game = data.game || {};
+        const Image = data.header_image || 'img/testimg.png';
         const genres = game.genres || 'Unknown Genre';
+        const categories = game.categories || '';
+        const isMultiplayer = categories.toLowerCase().includes('multi-player');
         const gameCard = `
-          <div class="game-card">
+          <div class="game-card" style="opacity: 0; transform: translateY(30px); filter: blur(10px);" data-appid="${game.appid}" data-game-name="${game.name || 'Unknown Game'}">
+            <div class="glow"></div>
             <div class="game-banner">
-              <img src="img/testimg" alt="Game Banner">
+              <img src="${Image}" alt="Game Banner">
             </div>
             <div class="game-info">
               <h3 class="game-title">${game.name || 'Unknown Game'}</h3>
@@ -220,13 +279,241 @@ $(document).ready(function () {
               <div class="game-meta">
                 <span class="game-time">${game.is_free ? 'Free to Play' : 'Paid'}</span>
                 <span class="game-difficulty">${game.positive || 0 > game.negative || 0 ? 'Positive Reviews' : 'Mixed Reviews'}</span>
+                ${isMultiplayer ? '<span class="game-friends">With Friends</span>' : ''}
               </div>
             </div>
           </div>
         `;
-        $('#gameResult').html(gameCard).show();
+        const $card = $(gameCard);
+        $('#gameResult').html($card).show();
+
+        // Animate card appearance
+        setTimeout(() => {
+          $card.css({
+            opacity: 1,
+            transform: 'translateY(0)',
+            filter: 'blur(0px)',
+            transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
+          });
+        }, 50);
+      })
+      .catch(error => {
+        showErrorPopup(translations[currentLang]['server-error']);
       });
   });
+
+  // Requirements check btn (ОБНОВЛЕННЫЙ БЛОК)
+  let requirementsMode = false;
+  $('#checkRequirements').on('click', function () {
+    requirementsMode = !requirementsMode;
+    $(this).toggleClass('active');
+
+    // Создаем слой-подложку, если его еще нет
+    if ($('.requirements-overlay').length === 0) {
+      $('body').append('<div class="requirements-overlay"></div>');
+    }
+
+    if (requirementsMode) {
+      $(this).css({ opacity: 1, cursor: 'pointer' });
+      const notificationText = translations[currentLang]['select-game'] || 'Select a game to check';
+      $('html').append('<div class="requirements-notification">' + notificationText + '</div>');
+
+      // Включаем идеальный блюр-слой и поднимаем карточки
+      $('.requirements-overlay').addClass('active');
+      $('#gameResult').addClass('elevated');
+      $('.game-card').css({ transform: 'scale(1.02)', transition: 'transform 0.3s ease' });
+
+    } else {
+      $(this).css({ opacity: 0.7, cursor: 'pointer' });
+
+      // Fade out notification before removing
+      $('.requirements-notification').addClass('hiding');
+      setTimeout(() => {
+        $('.requirements-notification').remove();
+      }, 500);
+
+      // Выключаем блюр immediately
+      $('.requirements-overlay').removeClass('active');
+      $('#gameResult').removeClass('elevated');
+      $('.game-card').css({ transform: 'scale(1)' });
+    }
+  });
+
+  // Game card click handler for requirements check (ОБНОВЛЕННЫЙ БЛОК)
+  $(document).on('click', '.game-card', function () {
+    if (requirementsMode) {
+      const appid = $(this).data('appid');
+      console.log('Clicked on game with appid:', appid);
+
+      if (appid) {
+        // Redirect to Steam game page
+        const steamUrl = `https://store.steampowered.com/app/${appid}`;
+        console.log('Opening Steam page:', steamUrl);
+        window.open(steamUrl, '_blank');
+
+        // Remove blur and reset
+        requirementsMode = false;
+        $('#checkRequirements').removeClass('active').css({ opacity: 0.7, cursor: 'pointer' });
+
+        // Fade out notification before removing
+        $('.requirements-notification').addClass('hiding');
+        setTimeout(() => {
+          $('.requirements-notification').remove();
+        }, 500);
+
+        // Отключаем оверлей immediately
+        $('.requirements-overlay').removeClass('active');
+        $('#gameResult').removeClass('elevated');
+        $('.game-card').css({ transform: 'scale(1)' });
+      }
+    }
+  });
+
+  // Find games btn
+  $('#findGames').on('click', function () {
+    // Get seen game IDs from localStorage to avoid repeats
+    const seenGames = localStorage.getItem('seenGames') || '';
+
+    // Build query parameters from userState
+    const params = new URLSearchParams();
+    if (seenGames) params.append('exclude', seenGames);
+    if (userState.single !== null && userState.single !== undefined) params.append('solo', userState.single);
+    if (userState.mood) params.append('mood', userState.mood);
+    if (userState.time) params.append('time', userState.time);
+
+    fetch(`http://127.0.0.1:8000/games/random?${params.toString()}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) {
+          // Show error popup
+          showErrorPopup(data.message || 'Database access error');
+          return;
+        }
+
+        const games = data.games || [];
+        if (games.length === 0) {
+          if (data.message) {
+            showErrorPopup(data.message);
+            return;
+          }
+          // If no games available, reset seen games and try again
+          localStorage.removeItem('seenGames');
+          const params2 = new URLSearchParams();
+          if (userState.single !== null && userState.single !== undefined) params2.append('solo', userState.single);
+          if (userState.mood) params2.append('mood', userState.mood);
+          if (userState.time) params2.append('time', userState.time);
+
+          fetch(`http://127.0.0.1:8000/games/random?${params2.toString()}`)
+            .then(r => r.json())
+            .then(data => {
+              if (data.error) {
+                showErrorPopup(data.message || 'Database access error');
+                return;
+              }
+              const games = data.games || [];
+              displayGames(games);
+            });
+          return;
+        }
+
+        displayGames(games);
+      })
+      .catch(error => {
+        showErrorPopup(translations[currentLang]['server-error']);
+      });
+  });
+
+  function showErrorPopup(message) {
+    const overlay = $('<div class="error-popup-overlay"></div>');
+    const popup = $(`
+      <div class="error-popup">
+        <div class="error-popup-content">
+          <div class="error-popup-icon">⚠️</div>
+          <h3>${translations[currentLang]['error-title']}</h3>
+          <p>${message}</p>
+        </div>
+      </div>
+    `);
+
+    $('html').append(overlay);
+    $('html').append(popup);
+
+    overlay.hide().fadeIn(300);
+    popup.css({ opacity: 0, transform: 'translate(-50%, -40%)' }).show().animate({
+      opacity: 1,
+      marginTop: '-=20px'
+    }, 300);
+
+    // Auto-fade after 800ms
+    setTimeout(() => {
+      popup.fadeOut(300, function() {
+        popup.remove();
+      });
+      overlay.fadeOut(300, function() {
+        overlay.remove();
+      });
+    }, 800);
+  }
+
+  function displayGames(games) {
+    const seenGames = new Set(localStorage.getItem('seenGames')?.split(',') || []);
+    const $gameResult = $('#gameResult').empty().show();
+
+    let currentIndex = 0;
+
+    function showNextCard() {
+      if (currentIndex >= games.length) {
+        // Save seen games to localStorage
+        localStorage.setItem('seenGames', Array.from(seenGames).join(','));
+        return;
+      }
+
+      const game = games[currentIndex];
+      const Image = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`;
+      const genres = game.genres || 'Unknown Genre';
+      const categories = game.categories || '';
+      const isMultiplayer = categories.toLowerCase().includes('multi-player');
+
+      const $card = $(`
+        <div class="game-card" style="opacity: 0; transform: translateY(30px); filter: blur(10px);" data-appid="${game.appid}" data-game-name="${game.name || 'Unknown Game'}">
+          <div class="glow"></div>
+          <div class="game-banner">
+            <img src="${Image}" alt="Game Banner">
+          </div>
+          <div class="game-info">
+            <h3 class="game-title">${game.name || 'Unknown Game'}</h3>
+            <p class="game-genre">${typeof genres === 'string' ? genres : genres.join(', ')}</p>
+            <div class="game-meta">
+              <span class="game-time">${game.is_free ? 'Free to Play' : 'Paid'}</span>
+              <span class="game-difficulty">${game.positive || 0 > game.negative || 0 ? 'Positive Reviews' : 'Mixed Reviews'}</span>
+              ${isMultiplayer ? '<span class="game-friends">With Friends</span>' : ''}
+            </div>
+          </div>
+        </div>
+      `);
+
+      $gameResult.append($card);
+
+      // Animate card appearance
+      setTimeout(() => {
+        $card.css({
+          opacity: 1,
+          transform: 'translateY(0)',
+          filter: 'blur(0px)',
+          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
+        });
+
+        // Add to seen games
+        seenGames.add(String(game.appid));
+
+        // Show next card
+        currentIndex++;
+        setTimeout(showNextCard, 200);
+      }, 50);
+    }
+
+    showNextCard();
+  }
 
   window.getUserState = () => userState;
   window.resetUserState = () => { userState = { time: null, mood: null, single: null }; $('.option-btn').removeClass('selected'); };
