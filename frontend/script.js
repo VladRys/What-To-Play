@@ -1,15 +1,21 @@
 $(document).ready(function () {
   // Translations
   const translations = {
-    en: { subtitle: 'What To Play Today', 'time-question': 'How much time you have to play?', 'time-30min': '30 min', 'time-1-2hrs': '1-2 hours', 'time-long': 'A long while', 'mood-question': 'Mood?', 'mood-chill': 'Chill (Hui DrochiLL)', 'mood-sweat': 'Sweat', 'mood-think': 'Think', 'mode-question': 'Single?', 'mode-solo': 'Solo', 'mode-friends': 'With Friends', 'find-games': 'Find games', 'reset': 'Reset', 'your-game': 'Your game:', 'dont-care': "Don't care", 'server-error': 'Failed to connect to server. Please try again.', 'error-title': 'Error' },
-    ru: { subtitle: 'Во что поиграть сегодня', 'time-question': 'Сколько у тебя времени?', 'time-30min': '30 мин', 'time-1-2hrs': '1-2 часа', 'time-long': 'Долго', 'mood-question': 'Вайб?', 'mood-chill': 'Чилл (Хуи Дрочил)', 'mood-sweat': 'Потеть', 'mood-think': 'Думать', 'mode-question': 'Режим?', 'mode-solo': 'Соло', 'mode-friends': 'С друзьями', 'find-games': 'Найти игры', 'reset': 'Сброс', 'your-game': 'Твоя игра:', 'dont-care': 'Мне похуй', 'server-error': 'Не удалось подключиться к серверу. Попробуйте снова.', 'error-title': 'Ошибка' },
-    uk: { subtitle: 'У Що Пограти Сьогодні', 'time-question': 'Скільки часу є?', 'time-30min': '30 хв', 'time-1-2hrs': '1-2 години', 'time-long': 'Довго', 'mood-question': 'Настрій?', 'mood-chill': 'Чілл (Хуй дрочіЛЛ)', 'mood-sweat': 'Потіти (ціцкі тикатИ)', 'mood-think': 'Думати', 'mode-question': 'Режим?', 'mode-solo': 'Соло', 'mode-friends': 'З друзями', 'find-games': 'Знайти ігри', 'reset': 'Скинути', 'your-game': 'Твоя гра:', 'dont-care': 'Мені похуй', 'server-error': 'Не вдалося підключитися до сервера. Спробуйте ще раз.', 'error-title': 'Помилка' }
+    en: { subtitle: 'What To Play Today', 'time-question': 'How much time you have to play?', 'time-30min': '30 min', 'time-1-2hrs': '1-2 hours', 'time-long': 'A long while', 'mood-question': 'Mood?', 'mood-chill': 'Chill (Hui DrochiLL)', 'mood-sweat': 'Sweat', 'mood-think': 'Think', 'mode-question': 'Single?', 'mode-solo': 'Solo', 'mode-friends': 'With Friends', 'find-games': 'Find games', 'reset': 'Reset', 'your-game': 'Your game:', 'dont-care': "Don't care", 'server-error': 'Failed to connect to server. Please try again.', 'error-title': 'Error', 'check-requirements': 'Check Requirements', 'steam-placeholder': 'Enter Steam nickname...', 'fetch-library': 'Fetch Library', 'select-game': 'Select a game to check' },
+    ru: { subtitle: 'Во что поиграть сегодня', 'time-question': 'Сколько у тебя времени?', 'time-30min': '30 мин', 'time-1-2hrs': '1-2 часа', 'time-long': 'Долго', 'mood-question': 'Вайб?', 'mood-chill': 'Чилл (Хуи Дрочил)', 'mood-sweat': 'Потеть', 'mood-think': 'Думать', 'mode-question': 'Режим?', 'mode-solo': 'Соло', 'mode-friends': 'С друзьями', 'find-games': 'Найти игры', 'reset': 'Сброс', 'your-game': 'Твоя игра:', 'dont-care': 'Мне похуй', 'server-error': 'Не удалось подключиться к серверу. Попробуйте снова.', 'error-title': 'Ошибка', 'check-requirements': 'Проверить требования', 'steam-placeholder': 'Введите никнейм Steam...', 'fetch-library': 'Загрузить библиотеку', 'select-game': 'Выбери игру для проверки' },
+    uk: { subtitle: 'У Що Пограти Сьогодні', 'time-question': 'Скільки часу є?', 'time-30min': '30 хв', 'time-1-2hrs': '1-2 години', 'time-long': 'Довго', 'mood-question': 'Настрій?', 'mood-chill': 'Чілл (Хуй дрочіЛЛ)', 'mood-sweat': 'Потіти (ціцкі тикатИ)', 'mood-think': 'Думати', 'mode-question': 'Режим?', 'mode-solo': 'Соло', 'mode-friends': 'З друзями', 'find-games': 'Знайти ігри', 'reset': 'Скинути', 'your-game': 'Твоя гра:', 'dont-care': 'Мені похуй', 'server-error': 'Не вдалося підключитися до серверу. Спробуйте ще раз.', 'error-title': 'Помилка', 'check-requirements': 'Перевірити вимоги', 'steam-placeholder': 'Введіть нікнейм Steam...', 'fetch-library': 'Завантажити бібліотеку', 'select-game': 'Вибери гру для перевірки' }
   };
 
   let currentLang = 'en', userState = { time: null, mood: null, single: null }, isResetAnimating = false;
 
   // Mouse tracking
   $('.option-btn, .action-btn').on('mousemove', function (e) {
+    const rect = this.getBoundingClientRect();
+    $(this).css({ '--mouse-x': ((e.clientX - rect.left) / rect.width) * 100 + '%', '--mouse-y': ((e.clientY - rect.top) / rect.height) * 100 + '%' });
+  });
+
+  // Mouse tracking for requirements button
+  $('#checkRequirements').on('mousemove', function (e) {
     const rect = this.getBoundingClientRect();
     $(this).css({ '--mouse-x': ((e.clientX - rect.left) / rect.width) * 100 + '%', '--mouse-y': ((e.clientY - rect.top) / rect.height) * 100 + '%' });
   });
@@ -44,6 +50,39 @@ $(document).ready(function () {
       }
     });
 
+    // Handle placeholder translations with typewriter effect
+    $('[data-translate-placeholder]').each(function () {
+      const key = $(this).data('translate-placeholder');
+      if (translations[currentLang]?.[key]) {
+        const $input = $(this);
+        const currentPlaceholder = $input.attr('placeholder') || '';
+        const newPlaceholder = translations[currentLang][key];
+
+        // Typewriter effect for placeholder
+        let i = 0, max = currentPlaceholder.length;
+        const erasePlaceholder = setInterval(() => {
+          if (i >= max) {
+            clearInterval(erasePlaceholder);
+            let j = 0, max2 = newPlaceholder.length;
+            const writePlaceholder = setInterval(() => {
+              if (j >= max2) {
+                clearInterval(writePlaceholder);
+              } else {
+                $input.attr('placeholder', newPlaceholder.substring(0, j + 1));
+                j++;
+              }
+            }, 15);
+          } else {
+            $input.attr('placeholder', currentPlaceholder.substring(0, currentPlaceholder.length - i));
+            i++;
+          }
+        }, 15);
+      }
+    });
+
+    // Apply blur to steam input during translation
+    $('#steamNickname').css({ filter: 'blur(4px)', opacity: 0.5, transition: 'all 0.2s ease' });
+
     // Set fixed width during translation
     $els.each(function() {
       const textData = texts.find(t => t.el[0] === this);
@@ -66,6 +105,7 @@ $(document).ready(function () {
               clearInterval(write);
               $els.css({ filter: 'blur(0)', opacity: 1, width: '' });
               $('.icon').css({ filter: 'blur(0)', opacity: 1 });
+              $('#steamNickname').css({ filter: 'blur(0)', opacity: 1 });
             } else {
               texts.forEach(t => j < t.new.length && t.el.html(t.icon).append(' ' + t.new.substring(0, j + 1)));
               j++;
@@ -228,7 +268,7 @@ $(document).ready(function () {
         const categories = game.categories || '';
         const isMultiplayer = categories.toLowerCase().includes('multi-player');
         const gameCard = `
-          <div class="game-card" style="opacity: 0; transform: translateY(30px); filter: blur(10px);">
+          <div class="game-card" style="opacity: 0; transform: translateY(30px); filter: blur(10px);" data-appid="${game.appid}" data-game-name="${game.name || 'Unknown Game'}">
             <div class="glow"></div>
             <div class="game-banner">
               <img src="${Image}" alt="Game Banner">
@@ -260,6 +300,73 @@ $(document).ready(function () {
       .catch(error => {
         showErrorPopup(translations[currentLang]['server-error']);
       });
+  });
+
+  // Requirements check btn (ОБНОВЛЕННЫЙ БЛОК)
+  let requirementsMode = false;
+  $('#checkRequirements').on('click', function () {
+    requirementsMode = !requirementsMode;
+    $(this).toggleClass('active');
+
+    // Создаем слой-подложку, если его еще нет
+    if ($('.requirements-overlay').length === 0) {
+      $('body').append('<div class="requirements-overlay"></div>');
+    }
+
+    if (requirementsMode) {
+      $(this).css({ opacity: 1, cursor: 'pointer' });
+      const notificationText = translations[currentLang]['select-game'] || 'Select a game to check';
+      $('html').append('<div class="requirements-notification">' + notificationText + '</div>');
+
+      // Включаем идеальный блюр-слой и поднимаем карточки
+      $('.requirements-overlay').addClass('active');
+      $('#gameResult').addClass('elevated');
+      $('.game-card').css({ transform: 'scale(1.02)', transition: 'transform 0.3s ease' });
+
+    } else {
+      $(this).css({ opacity: 0.7, cursor: 'pointer' });
+
+      // Fade out notification before removing
+      $('.requirements-notification').addClass('hiding');
+      setTimeout(() => {
+        $('.requirements-notification').remove();
+      }, 500);
+
+      // Выключаем блюр immediately
+      $('.requirements-overlay').removeClass('active');
+      $('#gameResult').removeClass('elevated');
+      $('.game-card').css({ transform: 'scale(1)' });
+    }
+  });
+
+  // Game card click handler for requirements check (ОБНОВЛЕННЫЙ БЛОК)
+  $(document).on('click', '.game-card', function () {
+    if (requirementsMode) {
+      const appid = $(this).data('appid');
+      console.log('Clicked on game with appid:', appid);
+
+      if (appid) {
+        // Redirect to Steam game page
+        const steamUrl = `https://store.steampowered.com/app/${appid}`;
+        console.log('Opening Steam page:', steamUrl);
+        window.open(steamUrl, '_blank');
+
+        // Remove blur and reset
+        requirementsMode = false;
+        $('#checkRequirements').removeClass('active').css({ opacity: 0.7, cursor: 'pointer' });
+
+        // Fade out notification before removing
+        $('.requirements-notification').addClass('hiding');
+        setTimeout(() => {
+          $('.requirements-notification').remove();
+        }, 500);
+
+        // Отключаем оверлей immediately
+        $('.requirements-overlay').removeClass('active');
+        $('#gameResult').removeClass('elevated');
+        $('.game-card').css({ transform: 'scale(1)' });
+      }
+    }
   });
 
   // Find games btn
@@ -368,7 +475,7 @@ $(document).ready(function () {
       const isMultiplayer = categories.toLowerCase().includes('multi-player');
 
       const $card = $(`
-        <div class="game-card" style="opacity: 0; transform: translateY(30px); filter: blur(10px);">
+        <div class="game-card" style="opacity: 0; transform: translateY(30px); filter: blur(10px);" data-appid="${game.appid}" data-game-name="${game.name || 'Unknown Game'}">
           <div class="glow"></div>
           <div class="game-banner">
             <img src="${Image}" alt="Game Banner">
