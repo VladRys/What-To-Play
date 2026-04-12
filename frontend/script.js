@@ -1,4 +1,7 @@
 $(document).ready(function () {
+  // Initialize requirements button as disabled
+  $('#checkRequirements').prop('disabled', true).css({ opacity: 0.4, cursor: 'not-allowed' });
+
   // Translations
   const translations = {
     en: { subtitle: 'What To Play Today', 'time-question': 'How much time you have to play?', 'time-30min': '30 min', 'time-1-2hrs': '1-2 hours', 'time-long': 'A long while', 'mood-question': 'Mood?', 'mood-chill': 'Chill (Hui DrochiLL)', 'mood-sweat': 'Sweat', 'mood-think': 'Think', 'mode-question': 'Single?', 'mode-solo': 'Solo', 'mode-friends': 'With Friends', 'find-games': 'Find games', 'reset': 'Reset', 'your-game': 'Your game:', 'dont-care': "Don't care", 'server-error': 'Failed to connect to server. Please try again.', 'error-title': 'Error', 'check-requirements': 'Check Requirements', 'steam-placeholder': 'Enter Steam nickname...', 'fetch-library': 'Fetch Library', 'select-game': 'Select a game to check' },
@@ -212,6 +215,9 @@ $(document).ready(function () {
     if (isResetAnimating || $('.option-btn.selected').length === 0) return;
     isResetAnimating = true;
 
+    // Disable requirements button on reset
+    $('#checkRequirements').prop('disabled', true).css({ opacity: 0.4, cursor: 'not-allowed' });
+
     const $shockwave = $('<div class="shockwave"></div>').css({
       position: 'absolute', left: e.pageX + 'px', top: e.pageY + 'px',
       width: '0px', height: '0px', borderRadius: '50%',
@@ -302,9 +308,61 @@ $(document).ready(function () {
       });
   });
 
+  // Steam mode toggle (ID/Nickname)
+  let steamInputMode = 'id'; // Default to ID mode
+  $('#toggleSteamMode').on('click', function () {
+    steamInputMode = steamInputMode === 'id' ? 'nickname' : 'id';
+    $(this).text(steamInputMode === 'id' ? 'SteamID' : 'Nickname');
+    $('#steamNickname').attr('placeholder', steamInputMode === 'id' ? 'Enter Steam ID...' : 'Enter Steam nickname...');
+    console.log('Steam input mode changed to:', steamInputMode);
+  });
+
+  // Fetch Steam library btn
+  $('#fetchSteamLibrary').on('click', function () {
+    const inputValue = $('#steamNickname').val().trim();
+
+    if (!inputValue) {
+      showErrorPopup(steamInputMode === 'id' ? 'Please enter Steam ID' : 'Please enter Steam nickname');
+      return;
+    }
+
+    // Use ID endpoint by default (nickname endpoint will be added later by backend)
+    const url = `http://127.0.0.1:8000/owned-games/${inputValue}`;
+
+    fetch(url)
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) {
+          showErrorPopup(data.error || 'Failed to fetch library');
+          return;
+        }
+
+        const games = data.owned_games || [];
+        console.log(`Fetched ${games.length} games from Steam library`);
+
+        // Save Steam library data to localStorage
+        const appids = games.map(game => game.appid);
+        localStorage.setItem('steamLibraryAppids', JSON.stringify(appids));
+        localStorage.setItem('steamLibrary', JSON.stringify(games));
+
+        // Show success message
+        showErrorPopup(`Successfully fetched ${games.length} games from library`);
+      })
+      .catch(error => {
+        console.error('Error fetching Steam library:', error);
+        showErrorPopup(translations[currentLang]['server-error']);
+      });
+  });
+
   // Requirements check btn (ОБНОВЛЕННЫЙ БЛОК)
   let requirementsMode = false;
   $('#checkRequirements').on('click', function () {
+    // Check if any games are displayed
+    if ($('.game-card').length === 0) {
+      showErrorPopup(translations[currentLang]['select-game'] || 'No games displayed');
+      return;
+    }
+
     requirementsMode = !requirementsMode;
     $(this).toggleClass('active');
 
@@ -374,7 +432,6 @@ $(document).ready(function () {
     // Get seen game IDs from localStorage to avoid repeats
     const seenGames = localStorage.getItem('seenGames') || '';
 
-    // Build query parameters from userState
     const params = new URLSearchParams();
     if (seenGames) params.append('exclude', seenGames);
     if (userState.single !== null && userState.single !== undefined) params.append('solo', userState.single);
@@ -385,18 +442,17 @@ $(document).ready(function () {
       .then(r => r.json())
       .then(data => {
         if (data.error) {
-          // Show error popup
           showErrorPopup(data.message || 'Database access error');
           return;
         }
 
         const games = data.games || [];
+
         if (games.length === 0) {
           if (data.message) {
             showErrorPopup(data.message);
             return;
           }
-          // If no games available, reset seen games and try again
           localStorage.removeItem('seenGames');
           const params2 = new URLSearchParams();
           if (userState.single !== null && userState.single !== undefined) params2.append('solo', userState.single);
@@ -411,6 +467,10 @@ $(document).ready(function () {
                 return;
               }
               const games = data.games || [];
+              if (games.length === 0) {
+                showErrorPopup('No games found matching your criteria');
+                return;
+              }
               displayGames(games);
             });
           return;
@@ -506,11 +566,17 @@ $(document).ready(function () {
         // Add to seen games
         seenGames.add(String(game.appid));
 
+        // Enable requirements button when games are displayed
+        $('#checkRequirements').prop('disabled', false).css({ opacity: 0.7, cursor: 'pointer' });
+
         // Show next card
         currentIndex++;
         setTimeout(showNextCard, 200);
       }, 50);
     }
+
+    // Disable requirements button when no games
+    $('#checkRequirements').prop('disabled', true).css({ opacity: 0.4, cursor: 'not-allowed' });
 
     showNextCard();
   }

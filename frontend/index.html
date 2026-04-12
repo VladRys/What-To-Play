@@ -13,7 +13,7 @@
     <div class="floating-particles"></div>
     <div class="container">
         <header>
-            <h1><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" style="vertical-align: middle; margin-right: 8px;"><path fill="#8b5cf6" d="m12 10.5l-3-3V2h6v5.5zm4.5 4.5l-3-3l3-3H22v6zM2 15V9h5.5l3 3l-3 3zm7 7v-5.5l3-3l3 3V22zm3-14.35l1-1V4h-2v2.65zM4 13h2.65l1-1l-1-1H4zm7 7h2v-2.65l-1-1l-1 1zm6.35-7H20v-2h-2.65l-1 1z"/></svg> WhatToPlay</h1>
+            <h1><iconify-icon icon="simple-icons:steam"></iconify-icon> WhatToPlay</h1>
             <p class="subtitle" data-translate="subtitle">What To Play Today</p>
             <div class="language-selector">
                 <button class="lang-btn active" data-lang="en">
@@ -72,10 +72,11 @@
 
             <div class="secondary-actions">
                 <div class="steam-input-section">
-                    <input type="text" id="steamNickname" placeholder="Enter Steam nickname..." class="steam-input" data-translate-placeholder="steam-placeholder" autocomplete="off">
-                    <button class="action-btn steam-fetch-btn" id="fetchSteamLibrary" data-translate="fetch-library"><span class="icon-wrapper"><img src="img/fa-download.svg"></span>Fetch Library</button>
+                    <button class="action-btn steam-mode-btn" id="toggleSteamMode" title="Toggle between ID and Nickname">SteamID</button>
+                    <input type="text" id="steamNickname" placeholder="Enter Steam ID..." class="steam-input" data-translate-placeholder="steam-placeholder" autocomplete="off">
+                    <button class="action-btn steam-fetch-btn" id="fetchSteamLibrary" data-translate="fetch-library"><span class="icon-wrapper"><iconify-icon icon="fa-solid:gamepad"></iconify-icon></span>Fetch Library</button>
                 </div>
-                <button class="action-btn requirements-btn" id="checkRequirements" data-translate="check-requirements"><div class="topo-flow"></div><span class="icon-wrapper"><img src="img fa-check.svg"></span>Check Requirements</button>
+                <button class="action-btn requirements-btn" id="checkRequirements" data-translate="check-requirements"><div class="topo-flow"></div><span class="icon-wrapper"><iconify-icon icon="fa-solid:clipboard-check"></iconify-icon></span>Check Requirements</button>
             </div>
 
             <div class="game-result" id="gameResult">
