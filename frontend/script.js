@@ -309,7 +309,7 @@ $(document).ready(function () {
   });
 
   // Steam mode toggle (ID/Nickname)
-  let steamInputMode = 'id'; // Default to ID mode
+  let steamInputMode = 'nickname'; // Default to nickname mode
   $('#toggleSteamMode').on('click', function () {
     steamInputMode = steamInputMode === 'id' ? 'nickname' : 'id';
     $(this).text(steamInputMode === 'id' ? 'SteamID' : 'Nickname');
@@ -326,14 +326,16 @@ $(document).ready(function () {
       return;
     }
 
-    // Use ID endpoint by default (nickname endpoint will be added later by backend)
-    const url = `http://127.0.0.1:8000/owned-games/${inputValue}`;
+    // Use appropriate endpoint based on input mode
+    const url = steamInputMode === 'id'
+      ? `http://127.0.0.1:8000/owned-games/id/${inputValue}`
+      : `http://127.0.0.1:8000/owned-games/vanity/${inputValue}`;
 
     fetch(url)
       .then(r => r.json())
       .then(data => {
-        if (data.error) {
-          showErrorPopup(data.error || 'Failed to fetch library');
+        if (data.error || data.status === 404) {
+          showErrorPopup(data.message || data.error || 'Failed to fetch library');
           return;
         }
 
