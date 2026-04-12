@@ -750,7 +750,7 @@ h2 {
     background-image: repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(239, 68, 68, 0.1) 10px, rgba(239, 68, 68, 0.1) 12px),
         repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(239, 68, 68, 0.1) 10px, rgba(239, 68, 68, 0.1) 12px);
     filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.3));
-    animation: gridScroll 3s linear infinite;
+    animation: gridScroll 8s linear infinite;
 }
 
 .error-popup-content::after {
@@ -866,7 +866,7 @@ h2 {
     background-image: repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(34, 197, 94, 0.1) 10px, rgba(34, 197, 94, 0.1) 12px),
         repeating-linear-gradient(90deg, transparent, transparent 10px, rgba(34, 197, 94, 0.1) 10px, rgba(34, 197, 94, 0.1) 12px);
     filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.3));
-    animation: gridScroll 3s linear infinite;
+    animation: gridScroll 8s linear infinite;
 }
 
 .success-popup-content::after {
