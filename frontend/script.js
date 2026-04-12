@@ -14,6 +14,12 @@ $(document).ready(function () {
     $(this).css({ '--mouse-x': ((e.clientX - rect.left) / rect.width) * 100 + '%', '--mouse-y': ((e.clientY - rect.top) / rect.height) * 100 + '%' });
   });
 
+  // Mouse tracking for game cards (added dynamically)
+  $(document).on('mousemove', '.game-card', function (e) {
+    const rect = this.getBoundingClientRect();
+    $(this).find('.glow').css({ '--mouse-x': ((e.clientX - rect.left) / rect.width) * 100 + '%', '--mouse-y': ((e.clientY - rect.top) / rect.height) * 100 + '%' });
+  });
+
   // Ripple effect
   $('.option-btn').on('click', function (e) {
     const rect = this.getBoundingClientRect();
@@ -351,6 +357,7 @@ $(document).ready(function () {
 
       const $card = $(`
         <div class="game-card" style="opacity: 0; transform: translateY(30px);">
+          <div class="glow"></div>
           <div class="game-banner">
             <img src="${Image}" alt="Game Banner">
           </div>
