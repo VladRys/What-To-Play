@@ -557,6 +557,13 @@ h2 {
     animation: cardEntrance 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     filter: blur(0px);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.game-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
 }
 
 .game-card::before {
@@ -647,6 +654,90 @@ h2 {
     clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
 }
 
+.error-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+}
+
+.error-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+}
+
+.error-popup-content {
+    background: linear-gradient(135deg, rgba(30, 30, 40, 0.95), rgba(20, 20, 30, 0.95));
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 16px;
+    padding: 40px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 0 40px rgba(239, 68, 68, 0.3), 0 0 80px rgba(239, 68, 68, 0.2);
+    animation: cyberpunkGlow 2s ease-in-out infinite;
+}
+
+.error-popup-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    animation: iconPulse 1s ease-in-out infinite;
+}
+
+.error-popup-content h3 {
+    color: #ef4444;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+.error-popup-content p {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 25px;
+    font-size: 1rem;
+}
+
+@keyframes cyberpunkGlow {
+    0%, 100% {
+        box-shadow: 0 0 40px rgba(239, 68, 68, 0.3), 0 0 80px rgba(239, 68, 68, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 60px rgba(239, 68, 68, 0.5), 0 0 120px rgba(239, 68, 68, 0.3);
+    }
+}
+
+@keyframes iconPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @keyframes iconWrapperPulse {
     0%, 100% {
         transform: scale(1);
@@ -680,6 +771,9 @@ h2 {
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .action-btn::before {
@@ -820,11 +914,11 @@ h2 {
 }
 
 .action-btn.dont-care-btn .icon-wrapper {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .action-btn.dont-care-btn:hover .icon-wrapper {
-    background: rgba(139, 92, 246, 0.2);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .floating-particles {
@@ -894,20 +988,18 @@ h2 {
 @keyframes bgPulse {
     0%, 100% {
         opacity: 0.8;
-        transform: scale(1);
     }
     50% {
         opacity: 1;
-        transform: scale(1.05);
     }
 }
 
 @keyframes gridMove {
     0% {
-        transform: translate(0, 0);
+        background-position: 0 0;
     }
     100% {
-        transform: translate(50px, 50px);
+        background-position: 50px 50px;
     }
 }
 
@@ -925,11 +1017,9 @@ h2 {
 @keyframes headerGlow {
     0% {
         opacity: 0.4;
-        transform: translate(-50%, -50%) scale(1);
     }
     100% {
         opacity: 0.8;
-        transform: translate(-50%, -50%) scale(1.2);
     }
 }
 
