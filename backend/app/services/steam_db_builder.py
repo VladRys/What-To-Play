@@ -1,15 +1,24 @@
+import logging
+
 import requests
 import time
 
-class SteamBuilder:
-    def __init__(self, repo):
-        self.repo = repo
+from backend.app.repositories.games import GamesRepository
 
-    def get_apps(self, api_key):
+class SteamBuilder:
+    """Service for building the local database of Steam games using Steam API"""
+    def __init__(self, repo: GamesRepository, logger: logging.Logger = logging.getLogger(__name__)):
+        self.repo = repo
+        self.logger = logger
+
+    def get_apps(self, api_key) -> list[dict]:
         url = "https://api.steampowered.com/IStoreService/GetAppList/v1/"
+        self.logger.info("Fetching list of all Steam apps from API")
+        
         return requests.get(url, params={"key": api_key}).json()["response"]["apps"]
 
-    def get_details(self, appid):
+    def get_details(self, appid: int) -> dict | None:
+        """Fetch details for a given app ID using Steam API"""
         url = f"https://store.steampowered.com/api/appdetails?appids={appid}"
         r = requests.get(url).json()
 
@@ -21,6 +30,8 @@ class SteamBuilder:
         if d.get("type") != "game":
             return None
 
+        self.logger.info(f"Fetched details for app {appid}: {d.get('name', 'Unknown')}")
+
         return {
             "appid": appid,
             "name": d.get("name"),
@@ -31,7 +42,8 @@ class SteamBuilder:
             "negative": 0
         }
 
-    def get_reviews(self, appid):
+    def get_reviews(self, appid: int) -> tuple[int, int]:
+        """Fetch review summary for a given app ID using Steam store reviews API"""
         url = f"https://store.steampowered.com/appreviews/{appid}?json=1&num_per_page=0"
 
         headers = {
@@ -48,16 +60,19 @@ class SteamBuilder:
             data = r.json()
             summary = data.get("query_summary", {})
 
+            self.logger.info(f"Fetched reviews for app {appid}: {summary.get('total_positive', 0)} positive, {summary.get('total_negative', 0)} negative")
+
             return (
                 summary.get("total_positive", 0),
                 summary.get("total_negative", 0)
             )
 
         except Exception as e:
-            print("Error:", e)
+            self.logger.warning(f"Error fetching reviews for app {appid}: {str(e)}")
             return (0, 0)
 
     def build(self, api_key, limit=500):
+        """Build the local database by fetching data from Steam API"""
         apps = self.get_apps(api_key)
 
         for i, app in enumerate(apps[:limit]):
@@ -68,14 +83,14 @@ class SteamBuilder:
                 data["positive"] = pos
                 data["negative"] = neg
             except Exception as e:
-                print(f"Error processing game ID {app['appid']}: {str(e)}")
+                self.logger.warning(f"Error processing game ID {app['appid']}: {str(e)}")
                 continue
 
             if data:
                 self.repo.add_game(data)
 
             if i % 50 == 0:
-                print(f"Processed {i}")
+                self.logger.info(f"Processed {i} apps")
 
             time.sleep(0.3)
             
