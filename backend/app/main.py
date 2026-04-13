@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.routers.games import router as games_router
 from backend.app.routers.steam import router as steam_router
-
 import logging
 
 app = FastAPI()

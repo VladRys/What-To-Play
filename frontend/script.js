@@ -83,8 +83,8 @@ $(document).ready(function () {
       }
     });
 
-    // Apply blur to steam input during translation
-    $('#steamNickname').css({ filter: 'blur(4px)', opacity: 0.5, transition: 'all 0.2s ease' });
+    // Apply blur to steam input and toggle button during translation
+    $('#steamNickname, #toggleSteamMode').css({ filter: 'blur(4px)', opacity: 0.5, transition: 'all 0.2s ease' });
 
     // Set fixed width during translation
     $els.each(function() {
@@ -108,7 +108,7 @@ $(document).ready(function () {
               clearInterval(write);
               $els.css({ filter: 'blur(0)', opacity: 1, width: '' });
               $('.icon').css({ filter: 'blur(0)', opacity: 1 });
-              $('#steamNickname').css({ filter: 'blur(0)', opacity: 1 });
+              $('#steamNickname, #toggleSteamMode').css({ filter: 'blur(0)', opacity: 1 });
             } else {
               texts.forEach(t => j < t.new.length && t.el.html(t.icon).append(' ' + t.new.substring(0, j + 1)));
               j++;
@@ -459,58 +459,92 @@ $(document).ready(function () {
 
   // Find games btn
   $('#findGames').on('click', function () {
-    // Get seen game IDs from localStorage to avoid repeats
-    const seenGames = localStorage.getItem('seenGames') || '';
+    // Map mood to vibe
+    const moodToVibe = {
+      'Chill (Hui DrochiLL)': 'chill',
+      'Sweat': 'sweat',
+      'Think': 'brain'
+    };
 
-    const params = new URLSearchParams();
-    if (seenGames) params.append('exclude', seenGames);
-    if (userState.single !== null && userState.single !== undefined) params.append('solo', userState.single);
-    if (userState.mood) params.append('mood', userState.mood);
-    if (userState.time) params.append('time', userState.time);
+    const vibe = userState.mood ? moodToVibe[userState.mood] : null;
 
-    fetch(`http://127.0.0.1:8000/games/random?${params.toString()}`)
-      .then(r => r.json())
-      .then(data => {
-        if (data.error) {
-          showErrorPopup(data.message || 'Database access error');
-          return;
-        }
-
-        const games = data.games || [];
-
-        if (games.length === 0) {
-          if (data.message) {
-            showErrorPopup(data.message);
+    if (vibe) {
+      // Use new vibe endpoint
+      fetch(`http://127.0.0.1:8000/games/vibe/${vibe}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.error) {
+            showErrorPopup(data.message || 'Failed to fetch games by vibe');
             return;
           }
-          localStorage.removeItem('seenGames');
-          const params2 = new URLSearchParams();
-          if (userState.single !== null && userState.single !== undefined) params2.append('solo', userState.single);
-          if (userState.mood) params2.append('mood', userState.mood);
-          if (userState.time) params2.append('time', userState.time);
 
-          fetch(`http://127.0.0.1:8000/games/random?${params2.toString()}`)
-            .then(r => r.json())
-            .then(data => {
-              if (data.error) {
-                showErrorPopup(data.message || 'Database access error');
-                return;
-              }
-              const games = data.games || [];
-              if (games.length === 0) {
-                showErrorPopup('No games found matching your criteria');
-                return;
-              }
-              displayGames(games);
-            });
-          return;
-        }
+          const games = data.games || [];
 
-        displayGames(games);
-      })
-      .catch(error => {
-        showErrorPopup(translations[currentLang]['server-error']);
-      });
+          if (games.length === 0) {
+            showErrorPopup('No games found for this vibe');
+            return;
+          }
+
+          displayGames(games);
+        })
+        .catch(error => {
+          console.error('Error fetching games by vibe:', error);
+          showErrorPopup(translations[currentLang]['server-error']);
+        });
+    } else {
+      // Fallback to old endpoint if no vibe selected
+      const seenGames = localStorage.getItem('seenGames') || '';
+
+      const params = new URLSearchParams();
+      if (seenGames) params.append('exclude', seenGames);
+      if (userState.single !== null && userState.single !== undefined) params.append('solo', userState.single);
+      if (userState.mood) params.append('mood', userState.mood);
+      if (userState.time) params.append('time', userState.time);
+
+      fetch(`http://127.0.0.1:8000/games/random?${params.toString()}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.error) {
+            showErrorPopup(data.message || 'Database access error');
+            return;
+          }
+
+          const games = data.games || [];
+
+          if (games.length === 0) {
+            if (data.message) {
+              showErrorPopup(data.message);
+              return;
+            }
+            localStorage.removeItem('seenGames');
+            const params2 = new URLSearchParams();
+            if (userState.single !== null && userState.single !== undefined) params2.append('solo', userState.single);
+            if (userState.mood) params2.append('mood', userState.mood);
+            if (userState.time) params2.append('time', userState.time);
+
+            fetch(`http://127.0.0.1:8000/games/random?${params2.toString()}`)
+              .then(r => r.json())
+              .then(data => {
+                if (data.error) {
+                  showErrorPopup(data.message || 'Database access error');
+                  return;
+                }
+                const games = data.games || [];
+                if (games.length === 0) {
+                  showErrorPopup('No games found matching your criteria');
+                  return;
+                }
+                displayGames(games);
+              });
+            return;
+          }
+
+          displayGames(games);
+        })
+        .catch(error => {
+          showErrorPopup(translations[currentLang]['server-error']);
+        });
+    }
   });
 
   let popupVisible = false;
@@ -594,16 +628,7 @@ $(document).ready(function () {
     const seenGames = new Set(localStorage.getItem('seenGames')?.split(',') || []);
     const $gameResult = $('#gameResult').empty().show();
 
-    let currentIndex = 0;
-
-    function showNextCard() {
-      if (currentIndex >= games.length) {
-        // Save seen games to localStorage
-        localStorage.setItem('seenGames', Array.from(seenGames).join(','));
-        return;
-      }
-
-      const game = games[currentIndex];
+    games.forEach((game, index) => {
       const Image = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`;
       const genres = game.genres || 'Unknown Genre';
       const categories = game.categories || '';
@@ -628,8 +653,9 @@ $(document).ready(function () {
       `);
 
       $gameResult.append($card);
+      seenGames.add(game.appid);
 
-      // Animate card appearance
+      // Animate card appearance with staggered delay
       setTimeout(() => {
         $card.css({
           opacity: 1,
@@ -637,23 +663,14 @@ $(document).ready(function () {
           filter: 'blur(0px)',
           transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
         });
+      }, 50 + index * 150);
+    });
 
-        // Add to seen games
-        seenGames.add(String(game.appid));
+    // Save seen games to localStorage
+    localStorage.setItem('seenGames', Array.from(seenGames).join(','));
 
-        // Enable requirements button when games are displayed
-        $('#checkRequirements').prop('disabled', false).css({ opacity: 0.7, cursor: 'pointer' });
-
-        // Show next card
-        currentIndex++;
-        setTimeout(showNextCard, 200);
-      }, 50);
-    }
-
-    // Disable requirements button when no games
-    $('#checkRequirements').prop('disabled', true).css({ opacity: 0.4, cursor: 'not-allowed' });
-
-    showNextCard();
+    // Enable requirements button when games are displayed
+    $('#checkRequirements').prop('disabled', false).css({ opacity: 1, cursor: 'pointer' });
   }
 
   window.getUserState = () => userState;
