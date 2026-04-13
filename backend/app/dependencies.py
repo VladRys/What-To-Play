@@ -1,6 +1,5 @@
 from backend.app.db.database import SqliteDatabase
 from backend.app.repositories.games import GamesRepository
-from backend.app.services.steam_db_builder import SteamBuilder
 from backend.app.config import config
 from backend.app.services.steam_user import SteamUserService
 from backend.app.services.games_service import GameService
@@ -15,8 +14,9 @@ This module centralizes the creation and management of dependencies, allowing fo
 logger = logging.getLogger(__name__)
 
 db = SqliteDatabase(config.DB_PATH)
+logger.info("Initializing database and repositories...")
 games_repo = GamesRepository(db, logger)
-builder = SteamBuilder(games_repo, logger)
+logger.info("Games repository initialized")
 steam_user_service = SteamUserService(config.STEAM_API_KEY)
 games_service = GameService(games_repo, logger)
 

@@ -1,8 +1,16 @@
 import logging
+import sys
+import time
+from pathlib import Path
 
 import requests
-import time
 
+ROOT_DIR = Path(__file__).resolve().parents[3]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from backend.app.config import config
+from backend.app.db.database import SqliteDatabase
 from backend.app.repositories.games import GamesRepository
 
 class SteamBuilder:
@@ -93,4 +101,12 @@ class SteamBuilder:
                 self.logger.info(f"Processed {i} apps")
 
             time.sleep(0.3)
-            
+
+
+def main(limit=1000):
+    builder = SteamBuilder(GamesRepository(SqliteDatabase(config.DB_PATH)), logging.getLogger("SteamBuilder"))
+    builder.build(config.STEAM_API_KEY, limit=limit)
+
+
+if __name__ == "__main__":
+    main(limit=5000)

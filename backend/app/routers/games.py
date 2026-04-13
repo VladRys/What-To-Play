@@ -60,3 +60,13 @@ def get_random_games(count: int = 6, exclude: str | None = None, solo: bool | No
         return {"games": result}
     except Exception as e:
         return {"games": [], "error": str(e), "message": "Database access error"}
+
+@router.get("/games/vibe/{vibe}")
+def get_games_by_vibe(vibe: str, repo = Depends(get_games_repo), logger = Depends(get_logger)):
+    """Get 3 games from different genres based on vibe (chill/sweat/brain)"""
+    try:
+        games = repo.get_games_by_vibe(vibe)
+        return {"games": games, "vibe": vibe}
+    except Exception as e:
+        logger.error(f"Error getting games by vibe '{vibe}': {str(e)}")
+        return {"games": [], "vibe": vibe, "error": str(e)}
