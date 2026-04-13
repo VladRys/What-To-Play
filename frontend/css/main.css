@@ -1,0 +1,28 @@
+/* Main CSS - Imports all modular CSS files */
+
+/* Keyframes (must be loaded first for animations) */
+@import url('keyframes.css');
+
+/* Base styles (reset, variables, body, scrollbar) */
+@import url('base.css');
+
+/* Header styles */
+@import url('header.css');
+
+/* Layout styles */
+@import url('layout.css');
+
+/* Utility styles (icons, particles) */
+@import url('utilities.css');
+
+/* Button styles */
+@import url('buttons.css');
+
+/* Card styles */
+@import url('cards.css');
+
+/* Popup styles */
+@import url('popups.css');
+
+/* Media queries (must be loaded last) */
+@import url('media.css');
