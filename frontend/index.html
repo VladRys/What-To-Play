@@ -1,88 +1,172 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WhatToPlay</title>
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/main.css" />
     <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
-    <script src="https://code.jquery.com/jquery-4.0.0.min.js" integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao=" crossorigin="anonymous"></script>
-</head>
-<body>
+    <script
+      src="https://code.jquery.com/jquery-4.0.0.min.js"
+      integrity="sha256-OaVG6prZf4v69dPg6PhVattBXkcOWQB62pdZ3ORyrao="
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
     <div class="topo-noise"></div>
     <div class="floating-particles"></div>
     <div class="container">
-        <header>
-            <h1><iconify-icon icon="simple-icons:steam"></iconify-icon> WhatToPlay</h1>
-            <p class="subtitle" data-translate="subtitle">What To Play Today</p>
-            <div class="language-selector">
-                <button class="lang-btn active" data-lang="en">
-                    <span class="flag">en</span>
-                </button>
-                <button class="lang-btn" data-lang="ru">
-                    <span class="flag">ru</span>
-                </button>
-                <button class="lang-btn" data-lang="uk">
-                    <span class="flag">uk</span>
-                </button>
-            </div>
-        </header>
-        
-        <main>
-            <section class="question-section">
-                <div class="question-header">
-                    <span class="icon time-icon"><img src="img/fa-clock.svg"></span>
-                    <h2 data-translate="time-question">How much time you have to play?</h2>
-                </div>
-                <div class="button-group">
-                    <button class="option-btn" data-translate="time-30min"><span class="icon-wrapper"><img src="img/fa-clock.svg"></span>30 min</button>
-                    <button class="option-btn" data-translate="time-1-2hrs"><span class="icon-wrapper"><img src="img/fa-hourglass.svg"></span>1-2 hours</button>
-                    <button class="option-btn" data-translate="time-long"><span class="icon-wrapper"><img src="img/fa-infinity.svg"></span>A long while</button>
-                </div>
-            </section>
+      <header>
+        <h1>
+          <iconify-icon icon="simple-icons:steam"></iconify-icon> WhatToPlay
+        </h1>
+        <p class="subtitle" data-translate="subtitle">What To Play Today</p>
+        <div class="language-selector">
+          <button class="lang-btn active" data-lang="en">
+            <span class="flag">en</span>
+          </button>
+          <button class="lang-btn" data-lang="ru">
+            <span class="flag">ru</span>
+          </button>
+          <button class="lang-btn" data-lang="uk">
+            <span class="flag">uk</span>
+          </button>
+        </div>
+      </header>
 
-            <section class="question-section">
-                <div class="question-header">
-                    <span class="icon mood-icon"><img src="img/fa-heart.svg"></span>
-                    <h2 data-translate="mood-question">Mood?</h2>
-                </div>
-                <div class="button-group">
-                    <button class="option-btn" data-translate="mood-chill"><span class="icon-wrapper"><img src="img/fa-heart.svg"></span>Chill</button>
-                    <button class="option-btn" data-translate="mood-sweat"><span class="icon-wrapper"><img src="img/fa-bolt.svg"></span>Sweat</button>
-                    <button class="option-btn clock-btn" data-translate="mood-think"><span class="icon-wrapper"><img src="img/fa-brain.svg"></span>Think</button>
-                </div>
-            </section>
+      <main>
+        <section class="question-section">
+          <div class="question-header">
+            <span class="icon time-icon"><img src="img/fa-clock.svg" /></span>
+            <h2 data-translate="time-question">
+              How much time you have to play?
+            </h2>
+          </div>
+          <div class="button-group">
+            <button class="option-btn" data-translate="time-30min">
+              <span class="icon-wrapper"><img src="img/fa-clock.svg" /></span>30
+              min
+            </button>
+            <button class="option-btn" data-translate="time-1-2hrs">
+              <span class="icon-wrapper"
+                ><img src="img/fa-hourglass.svg" /></span
+              >1-2 hours
+            </button>
+            <button class="option-btn" data-translate="time-long">
+              <span class="icon-wrapper"><img src="img/fa-infinity.svg" /></span
+              >A long while
+            </button>
+          </div>
+        </section>
 
-            <section class="question-section">
-                <div class="question-header">
-                    <span class="icon single-icon"><img src="img/fa-user.svg"></span>
-                    <h2 data-translate="mode-question">Single?</h2>
-                </div>
-                <div class="button-group">
-                    <button class="option-btn" data-translate="mode-solo"><span class="icon-wrapper"><img src="img/fa-user.svg"></span>Solo</button>
-                    <button class="option-btn" data-translate="mode-friends"><span class="icon-wrapper"><img src="img/fa-user-group.svg"></span>With friends</button>
-                </div>
-            </section>
-            
-            <div class="action-buttons">
-                <button class="action-btn primary" id="findGames" data-translate="find-games"><span class="icon-wrapper"><img src="img/fa-magnifying-glass.svg"></span>Find games</button>
-                <button class="action-btn dont-care-btn" id="dontCare" data-translate="dont-care"><span class="icon-wrapper"><img src="img/fa-heart.svg"></span>Don't care</button>
-                <button class="action-btn" id="reset" data-translate="reset"><span class="icon-wrapper"><img src="img/fa-rotate-right.svg"></span>Reset</button>
-            </div>
+        <section class="question-section">
+          <div class="question-header">
+            <span class="icon mood-icon"><img src="img/fa-heart.svg" /></span>
+            <h2 data-translate="mood-question">Mood?</h2>
+          </div>
+          <div class="button-group">
+            <button class="option-btn" data-translate="mood-chill">
+              <span class="icon-wrapper"><img src="img/fa-heart.svg" /></span
+              >Chill
+            </button>
+            <button class="option-btn" data-translate="mood-sweat">
+              <span class="icon-wrapper"><img src="img/fa-bolt.svg" /></span
+              >Sweat
+            </button>
+            <button class="option-btn clock-btn" data-translate="mood-think">
+              <span class="icon-wrapper"><img src="img/fa-brain.svg" /></span
+              >Think
+            </button>
+          </div>
+        </section>
 
-            <div class="secondary-actions">
-                <div class="steam-input-section">
-                    <button class="action-btn steam-mode-btn" id="toggleSteamMode" title="Toggle between ID and Nickname">Nickname</button>
-                    <input type="text" id="steamNickname" placeholder="Enter Steam nickname..." class="steam-input" data-translate-placeholder="steam-placeholder" autocomplete="off">
-                    <button class="action-btn steam-fetch-btn" id="fetchSteamLibrary" data-translate="fetch-library"><span class="icon-wrapper"><iconify-icon icon="fa-solid:gamepad"></iconify-icon></span>Fetch Library</button>
-                </div>
-                <button class="action-btn requirements-btn" id="checkRequirements" data-translate="check-requirements"><div class="topo-flow"></div><span class="icon-wrapper"><iconify-icon icon="fa-solid:clipboard-check"></iconify-icon></span>Check Requirements</button>
-            </div>
+        <section class="question-section">
+          <div class="question-header">
+            <span class="icon single-icon"><img src="img/fa-user.svg" /></span>
+            <h2 data-translate="mode-question">Single?</h2>
+          </div>
+          <div class="button-group">
+            <button class="option-btn" data-translate="mode-solo">
+              <span class="icon-wrapper"><img src="img/fa-user.svg" /></span
+              >Solo
+            </button>
+            <button class="option-btn" data-translate="mode-friends">
+              <span class="icon-wrapper"
+                ><img src="img/fa-user-group.svg" /></span
+              >With friends
+            </button>
+          </div>
+        </section>
 
-            <div class="game-result" id="gameResult">
-            </div>
-        </main>
+        <div class="action-buttons">
+          <button
+            class="action-btn primary"
+            id="findGames"
+            data-translate="find-games"
+          >
+            <span class="icon-wrapper"
+              ><img src="img/fa-magnifying-glass.svg" /></span
+            >Find games
+          </button>
+          <button
+            class="action-btn dont-care-btn"
+            id="dontCare"
+            data-translate="dont-care"
+          >
+            <span class="icon-wrapper"><img src="img/fa-heart.svg" /></span
+            >Don't care
+          </button>
+          <button class="action-btn" id="reset" data-translate="reset">
+            <span class="icon-wrapper"
+              ><img src="img/fa-rotate-right.svg" /></span
+            >Reset
+          </button>
+        </div>
+
+        <div class="secondary-actions">
+          <div class="steam-input-section">
+            <button
+              class="action-btn steam-mode-btn"
+              id="toggleSteamMode"
+              title="Toggle between ID and Nickname"
+            >
+              Nickname
+            </button>
+            <input
+              type="text"
+              id="steamNickname"
+              placeholder="Enter Steam nickname..."
+              class="steam-input"
+              data-translate-placeholder="steam-placeholder"
+              autocomplete="off"
+            />
+            <button
+              class="action-btn steam-fetch-btn"
+              id="fetchSteamLibrary"
+              data-translate="fetch-library"
+            >
+              <span class="icon-wrapper"
+                ><iconify-icon icon="fa-solid:gamepad"></iconify-icon></span
+              >Fetch Library
+            </button>
+          </div>
+          <button
+            class="action-btn requirements-btn"
+            id="checkRequirements"
+            data-translate="check-requirements"
+          >
+            <div class="topo-flow"></div>
+            <span class="icon-wrapper"
+              ><iconify-icon
+                icon="fa-solid:clipboard-check"
+              ></iconify-icon></span
+            >Check Requirements
+          </button>
+        </div>
+
+        <div class="game-result" id="gameResult"></div>
+      </main>
     </div>
-</body>
-<script type="module" src="js/main.js"></script>
+  </body>
+  <script type="module" src="js/main.js"></script>
 </html>
