@@ -88,12 +88,33 @@ export function fetchSteamLibrary(currentLang) {
       localStorage.setItem("steamLibraryAppids", JSON.stringify(appids));
       localStorage.setItem("steamLibrary", JSON.stringify(games));
 
-      // Reset flag to allow success popup to show
-      resetPopupVisible();
-      // Show success message
-      showSuccessPopup(
-        `Successfully fetched ${games.length} games from library`,
-      );
+      // Call /games/filters with is_user_library=True
+      const params = new URLSearchParams();
+      params.append("is_user_library", "true");
+      params.append("user_library", JSON.stringify(games));
+
+      fetch(`http://127.0.0.1:8000/games/filters?${params.toString()}`)
+        .then((r) => r.json())
+        .then((filterData) => {
+          console.log("Filter response:", filterData);
+
+          // Reset flag to allow success popup to show
+          resetPopupVisible();
+          // Show success message
+          showSuccessPopup(
+            `Successfully fetched ${games.length} games from library`,
+          );
+        })
+        .catch((error) => {
+          console.error("Error calling filters endpoint:", error);
+
+          // Reset flag to allow success popup to show
+          resetPopupVisible();
+          // Show success message even if filters call fails
+          showSuccessPopup(
+            `Successfully fetched ${games.length} games from library`,
+          );
+        });
     })
     .catch((error) => {
       console.error("Error fetching Steam library:", error);

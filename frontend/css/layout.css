@@ -59,9 +59,11 @@
 
 .steam-input-section {
   display: grid;
-  grid-template-columns: minmax(80px, auto) 0.8fr minmax(120px, auto);
+  grid-template-columns: minmax(80px, auto) 1fr;
   gap: 10px;
   align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  width: fit-content;
   opacity: 0.5;
-  width: 100%;
 }

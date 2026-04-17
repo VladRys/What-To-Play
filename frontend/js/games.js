@@ -1,6 +1,6 @@
 // Game-related functionality
 
-import { moodToVibe } from "./config.js";
+import { moodToVibe, translations } from "./config.js";
 import { showErrorPopup, showSuccessPopup, resetPopupVisible } from "./ui.js";
 
 export function displayGames(games) {
@@ -63,31 +63,109 @@ export function findGames(userState, currentLang) {
   const vibe = userState.mood ? moodToVibe[userState.mood] : null;
 
   if (vibe) {
-    // Use new vibe endpoint
-    fetch(`http://127.0.0.1:8000/games/vibe/${vibe}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.error) {
-          showErrorPopup(
-            data.message || "Failed to fetch games by vibe",
-            currentLang,
-          );
-          return;
-        }
+    // Check if user entered Steam nickname
+    const steamNickname = $("#steamNickname").val().trim();
 
-        const games = data.games || [];
+    if (steamNickname) {
+      // Detect if input is Steam ID (17 digits) or nickname
+      const isSteamId = /^\d{17}$/.test(steamNickname);
+      const steamUrl = isSteamId
+        ? `http://127.0.0.1:8000/owned-games/id/${steamNickname}`
+        : `http://127.0.0.1:8000/owned-games/vanity/${steamNickname}`;
 
-        if (games.length === 0) {
-          showErrorPopup("No games found for this vibe", currentLang);
-          return;
-        }
+      fetch(steamUrl)
+        .then((r) => r.json())
+        .then((libraryData) => {
+          if (libraryData.error || libraryData.status === 404) {
+            resetPopupVisible();
+            showErrorPopup(
+              libraryData.message || "Failed to fetch Steam library",
+              currentLang,
+            );
+            return;
+          }
 
-        displayGames(games);
-      })
-      .catch((error) => {
-        console.error("Error fetching games by vibe:", error);
-        showErrorPopup(translations[currentLang]["server-error"], currentLang);
-      });
+          const userLibrary = libraryData.owned_games || [];
+
+          // Save to localStorage
+          localStorage.setItem("steamLibrary", JSON.stringify(userLibrary));
+
+          // Send POST request to /games/filters with library in body
+          const payload = {
+            vibe: vibe,
+            is_user_library: true,
+            library: userLibrary
+          };
+
+          fetch("http://127.0.0.1:8000/games/filters", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+          })
+            .then((r) => r.json())
+            .then((data) => {
+              if (data.error) {
+                resetPopupVisible();
+                showErrorPopup(
+                  data.message || "Failed to fetch games",
+                  currentLang,
+                );
+                return;
+              }
+
+              const games = data.games || [];
+
+              if (games.length === 0) {
+                resetPopupVisible();
+                showErrorPopup("No games found", currentLang);
+                return;
+              }
+
+              displayGames(games);
+            })
+            .catch((error) => {
+              console.error("Error fetching games:", error);
+              resetPopupVisible();
+              showErrorPopup(translations[currentLang]["server-error"], currentLang);
+            });
+        })
+        .catch((error) => {
+          console.error("Error fetching Steam library:", error);
+          resetPopupVisible();
+          showErrorPopup(translations[currentLang]["server-error"], currentLang);
+        });
+    } else {
+      // Use regular vibe endpoint without Steam library
+      fetch(`http://127.0.0.1:8000/games/vibe/${vibe}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.error) {
+            resetPopupVisible();
+            showErrorPopup(
+              data.message || "Failed to fetch games by vibe",
+              currentLang,
+            );
+            return;
+          }
+
+          const games = data.games || [];
+
+          if (games.length === 0) {
+            resetPopupVisible();
+            showErrorPopup("No games found for this vibe", currentLang);
+            return;
+          }
+
+          displayGames(games);
+        })
+        .catch((error) => {
+          console.error("Error fetching games by vibe:", error);
+          resetPopupVisible();
+          showErrorPopup(translations[currentLang]["server-error"], currentLang);
+        });
+    }
   } else {
     // Fallback to old endpoint if no vibe selected
     const seenGames = localStorage.getItem("seenGames") || "";
@@ -103,6 +181,7 @@ export function findGames(userState, currentLang) {
       .then((r) => r.json())
       .then((data) => {
         if (data.error) {
+          resetPopupVisible();
           showErrorPopup(data.message || "Database access error", currentLang);
           return;
         }
@@ -111,6 +190,7 @@ export function findGames(userState, currentLang) {
 
         if (games.length === 0) {
           if (data.message) {
+            resetPopupVisible();
             showErrorPopup(data.message, currentLang);
             return;
           }
@@ -125,6 +205,7 @@ export function findGames(userState, currentLang) {
             .then((r) => r.json())
             .then((data) => {
               if (data.error) {
+                resetPopupVisible();
                 showErrorPopup(
                   data.message || "Database access error",
                   currentLang,
@@ -133,6 +214,7 @@ export function findGames(userState, currentLang) {
               }
               const games = data.games || [];
               if (games.length === 0) {
+                resetPopupVisible();
                 showErrorPopup(
                   "No games found matching your criteria",
                   currentLang,
@@ -147,6 +229,7 @@ export function findGames(userState, currentLang) {
         displayGames(games);
       })
       .catch((error) => {
+        resetPopupVisible();
         showErrorPopup(translations[currentLang]["server-error"], currentLang);
       });
   }
@@ -192,6 +275,7 @@ export function dontCare(currentLang) {
       }, 50);
     })
     .catch((error) => {
+      resetPopupVisible();
       showErrorPopup(translations[currentLang]["server-error"], currentLang);
     });
 }

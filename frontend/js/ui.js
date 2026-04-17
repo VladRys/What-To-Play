@@ -5,8 +5,10 @@ import { translations } from "./config.js";
 let popupVisible = false;
 
 export function showErrorPopup(message, currentLang = "en") {
+  console.log("showErrorPopup called, popupVisible:", popupVisible, "message:", message);
   if (popupVisible) return;
   popupVisible = true;
+  console.log("popupVisible set to true");
   const overlay = $('<div class="error-popup-overlay"></div>');
   const popup = $(`
     <div class="error-popup">
