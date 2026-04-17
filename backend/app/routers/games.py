@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from backend.app.dependencies import get_games_repo, get_logger, get_games_service
+from backend.app.schemas.games import FilteredGamesRequest, FilteredGamesResponse
 import random
 
 router = APIRouter()
@@ -71,20 +72,41 @@ def get_games_by_vibe(vibe: str, repo = Depends(get_games_repo), logger = Depend
         logger.error(f"Error getting games by vibe '{vibe}': {str(e)}")
         return {"games": [], "vibe": vibe, "error": str(e)}
     
-@router.get("/games/filters")
-async def get_games_with_filters(vibe: str | None = None, is_user_library: bool = False, user_library: list[dict] | None = None, repo = Depends(get_games_repo), logger = Depends(get_logger)):
-    if is_user_library and user_library is not None:
+@router.post("/games/filters", response_model=FilteredGamesResponse)
+async def get_games_with_filters(request: FilteredGamesRequest, repo = Depends(get_games_repo), logger = Depends(get_logger)):
+    """Get games based on filters. Can be used to get games from user library or get ganes based on filters from local database"""
+    logger.info(f"Fetching games with filters - Vibe: {request.vibe}, Is User Library: {request.is_user_library}, User Library Count: {len(request.library) if request.library else 0}")
+    if request.is_user_library and request.library:
         try:
-            game = user_library[random.randint(0, len(user_library) - 1)]
-            return {"games": [game], "message": "Game from user library", "is_user_library": True, "status": 200}
+            game = random.choice(request.library)
+            return FilteredGamesResponse(
+                games=[game], # TODO: Upd game count to 3
+                vibe=request.vibe,
+                message="Fetched game with filter from user library",
+                is_user_library=request.is_user_library,
+                status=200
+            ) 
         
         except Exception as e:
             logger.error(f"Error processing games with user library: {str(e)}")
-            return {"games": [], "error": str(e), "message": "Error processing games with user library", "status": 500}
+            return FilteredGamesResponse(
+                games=[],
+                vibe=request.vibe,
+                message="Error processing games with user library",
+                status=404
+            )
     
     try:
-        games = repo.get_games_by_vibe(vibe)
-        return {"games": games, "vibe": vibe}
+        games = repo.get_games_by_vibe(request.vibe)
+        return FilteredGamesResponse(
+            games=games, vibe=request.vibe, message="Games from local database based on vibe filter", is_user_library=False, status=200
+        )
+        
     except Exception as e:
-        logger.error(f"Error getting games by vibe '{vibe}': {str(e)}")
-        return {"games": [], "vibe": vibe, "error": str(e)}
+        logger.error(f"Error getting games by vibe '{request.vibe}': {str(e)}")
+        return FilteredGamesResponse(
+                games=[],
+                vibe=request.vibe,
+                message="Error processing filtered games from local database",
+                status=404
+            )
