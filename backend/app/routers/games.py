@@ -1,7 +1,10 @@
 from fastapi import APIRouter, Depends
 from backend.app.dependencies import get_games_repo, get_logger, get_games_service
-from backend.app.schemas.games import FilteredGamesRequest, FilteredGamesResponse
+from backend.app.schemas.games import FilteredGamesRequest, FilteredGamesResponse, VibesGamesResponse
+from backend.app.exceptions import UnknownVibeException
 import random
+
+from backend.app.config import config
 
 router = APIRouter()
 
@@ -62,19 +65,31 @@ def get_random_games(count: int = 6, exclude: str | None = None, solo: bool | No
     except Exception as e:
         return {"games": [], "error": str(e), "message": "Database access error"}
 
-@router.get("/games/vibe/{vibe}")
-def get_games_by_vibe(vibe: str, repo = Depends(get_games_repo), logger = Depends(get_logger)):
+@router.get("/games/vibe/{vibe}", response_model=VibesGamesResponse)
+def get_games_by_vibe(vibe: str, repo = Depends(get_games_repo), logger = Depends(get_logger)) -> VibesGamesResponse:
     """Get 3 games from different genres based on vibe (chill/sweat/brain)"""
     try:
         games = repo.get_games_by_vibe(vibe)
-        return {"games": games, "vibe": vibe}
+        return VibesGamesResponse(
+            games=games,
+            vibe=vibe,
+            status=200,
+            message=f"Succesfully fetched games by vibe from /games/vibe/{vibe}"
+        )
+    except UnknownVibeException:
+        msg = f"Uknown vibe: {vibe}, no games was returned. Use {config.VIBES_MAP.keys()}."
+        
+        logger.warning(msg)
+        return VibesGamesResponse(
+            message=msg, vibe=vibe
+        )
     except Exception as e:
         logger.error(f"Error getting games by vibe '{vibe}': {str(e)}")
-        return {"games": [], "vibe": vibe, "error": str(e)}
+        return VibesGamesResponse(vibe=vibe, message="Error getting games by vibe.")
     
 @router.post("/games/filters", response_model=FilteredGamesResponse)
 async def get_games_with_filters(request: FilteredGamesRequest, repo = Depends(get_games_repo), logger = Depends(get_logger)):
-    """Get games based on filters. Can be used to get games from user library or get ganes based on filters from local database"""
+    """Get games based on filters. Can be used to get games from user library (rn only fully random game) or get ganes based on filters from local database"""
     logger.info(f"Fetching games with filters - Vibe: {request.vibe}, Is User Library: {request.is_user_library}, User Library Count: {len(request.library) if request.library else 0}")
     if request.is_user_library and request.library:
         try:
@@ -90,7 +105,6 @@ async def get_games_with_filters(request: FilteredGamesRequest, repo = Depends(g
         except Exception as e:
             logger.error(f"Error processing games with user library: {str(e)}")
             return FilteredGamesResponse(
-                games=[],
                 vibe=request.vibe,
                 message="Error processing games with user library",
                 status=404
@@ -99,14 +113,19 @@ async def get_games_with_filters(request: FilteredGamesRequest, repo = Depends(g
     try:
         games = repo.get_games_by_vibe(request.vibe)
         return FilteredGamesResponse(
-            games=games, vibe=request.vibe, message="Games from local database based on vibe filter", is_user_library=False, status=200
+            games=games, 
+            vibe=request.vibe, 
+            message="Games from local database based on vibe filter", 
+            is_user_library=False, 
+            status=200
         )
-        
+    except UnknownVibeException:
+        return FilteredGamesResponse(
+            message=f"Uknown vibe, no games was returned. Use {config.VIBES_MAP.keys()}."
+        )
     except Exception as e:
         logger.error(f"Error getting games by vibe '{request.vibe}': {str(e)}")
         return FilteredGamesResponse(
-                games=[],
-                vibe=request.vibe,
-                message="Error processing filtered games from local database",
-                status=404
+            vibe=request.vibe,
+            message="Error processing filtered games from local database"
             )

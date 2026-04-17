@@ -1,8 +1,8 @@
 import logging
 
 from backend.app.db.database import SqliteDatabase
-
 from backend.app.config import config as cfg
+from backend.app.exceptions import UnknownVibeException
 
 class GamesRepository:
     """Repository for managing games in the local database"""
@@ -162,8 +162,8 @@ class GamesRepository:
     def get_games_by_vibe(self, vibe: str) -> list[dict]:
         """Get 3 random games from different genres based on vibe from VIBES_MAP"""
         if vibe not in cfg.VIBES_MAP:
-            self.logger.warning(f"Unknown vibe: {vibe}")
-            return []
+            self.logger.error(f"Unknown vibe: {vibe}")
+            raise UnknownVibeException 
             
         genres = cfg.VIBES_MAP[vibe]
         if not genres:
