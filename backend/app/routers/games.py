@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
 from backend.app.dependencies import get_games_repo, get_logger, get_games_service
-from backend.app.schemas.games import FilteredGamesRequest, FilteredGamesResponse, VibesGamesResponse
+from backend.app.schemas.games import FilteredGamesRequest, FilteredGamesResponse, VibesGamesResponse, GetGameInfoResponse
 from backend.app.exceptions import UnknownVibeException
+from backend.app.services.games_service import GameService
 import random
 
 from backend.app.config import config
@@ -88,12 +89,23 @@ def get_games_by_vibe(vibe: str, repo = Depends(get_games_repo), logger = Depend
         return VibesGamesResponse(vibe=vibe, message="Error getting games by vibe.")
     
 @router.post("/games/filters", response_model=FilteredGamesResponse)
-async def get_games_with_filters(request: FilteredGamesRequest, repo = Depends(get_games_repo), logger = Depends(get_logger)):
+async def get_games_with_filters(request: FilteredGamesRequest, repo = Depends(get_games_repo), logger = Depends(get_logger), game_service: GameService = Depends(get_games_service)) -> FilteredGamesResponse | GetGameInfoResponse:
     """Get games based on filters. Can be used to get games from user library (rn only fully random game) or get ganes based on filters from local database"""
     logger.info(f"Fetching games with filters - Vibe: {request.vibe}, Is User Library: {request.is_user_library}, User Library Count: {len(request.library) if request.library else 0}")
     if request.is_user_library and request.library:
         try:
             game = random.choice(request.library)
+            enhanced_game = game_service.get_game_info_by_id(game.appid) 
+            
+            if enhanced_game:
+                return FilteredGamesResponse(
+                    games=[enhanced_game],
+                    message="Successfully fetched games by filters",
+                    status=200,
+                    is_user_library=request.is_user_library,
+                    vibe=request.vibe
+                )
+            
             return FilteredGamesResponse(
                 games=[game], # TODO: Upd game count to 3
                 vibe=request.vibe,
