@@ -70,3 +70,21 @@ def get_games_by_vibe(vibe: str, repo = Depends(get_games_repo), logger = Depend
     except Exception as e:
         logger.error(f"Error getting games by vibe '{vibe}': {str(e)}")
         return {"games": [], "vibe": vibe, "error": str(e)}
+    
+@router.get("/games/filters")
+async def get_games_with_filters(vibe: str | None = None, is_user_library: bool = False, user_library: list[dict] | None = None, repo = Depends(get_games_repo), logger = Depends(get_logger)):
+    if is_user_library and user_library is not None:
+        try:
+            game = user_library[random.randint(0, len(user_library) - 1)]
+            return {"games": [game], "message": "Game from user library", "is_user_library": True, "status": 200}
+        
+        except Exception as e:
+            logger.error(f"Error processing games with user library: {str(e)}")
+            return {"games": [], "error": str(e), "message": "Error processing games with user library", "status": 500}
+    
+    try:
+        games = repo.get_games_by_vibe(vibe)
+        return {"games": games, "vibe": vibe}
+    except Exception as e:
+        logger.error(f"Error getting games by vibe '{vibe}': {str(e)}")
+        return {"games": [], "vibe": vibe, "error": str(e)}
