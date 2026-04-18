@@ -102,3 +102,17 @@ export function resetPopupVisible() {
 export function getPopupVisible() {
   return popupVisible;
 }
+
+export function showLoadingOverlay() {
+  const overlay = $("#loadingOverlay");
+  if (overlay.length) {
+    overlay.addClass("active");
+  }
+}
+
+export function hideLoadingOverlay() {
+  const overlay = $("#loadingOverlay");
+  if (overlay.length) {
+    overlay.removeClass("active");
+  }
+}

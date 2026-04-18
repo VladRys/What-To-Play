@@ -26,9 +26,13 @@ body {
   color: var(--light);
   min-height: 100vh;
   padding: 40px 20px;
-  position: relative;
   overflow-x: hidden;
-  perspective: 1000px;
+  overflow-y: auto;
+}
+
+html {
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 body::before {
@@ -92,7 +96,6 @@ body::after {
   width: 100%;
   margin: 0 auto;
   padding: 60px 50px;
-  animation: containerEntrance 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html {

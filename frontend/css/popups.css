@@ -257,7 +257,7 @@
 }
 
 .success-popup-content p {
-  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
   margin-bottom: 25px;
   font-size: 1rem;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -283,11 +283,52 @@
     "Segoe UI",
     system-ui,
     -apple-system,
+    BlinkMacSystemFont,
     sans-serif;
-  z-index: 99999;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
-  animation: notificationSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 9999;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.loading-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.loading-text {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  animation: pulse 1.5s ease-in-out infinite;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .requirements-notification.hiding {
