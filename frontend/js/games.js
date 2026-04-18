@@ -1,7 +1,7 @@
 // Game-related functionality
 
 import { moodToVibe, translations } from "./config.js";
-import { showErrorPopup, showSuccessPopup, resetPopupVisible } from "./ui.js";
+import { showErrorPopup, showSuccessPopup, resetPopupVisible, showLoadingOverlay, hideLoadingOverlay } from "./ui.js";
 
 export function displayGames(games) {
   const seenGames = new Set(
@@ -53,6 +53,12 @@ export function displayGames(games) {
   // Save seen games to localStorage
   localStorage.setItem("seenGames", Array.from(seenGames).join(","));
 
+  // Hide loading overlay after all card animations complete
+  const maxDelay = 50 + games.length * 150;
+  setTimeout(() => {
+    hideLoadingOverlay();
+  }, maxDelay + 500); // +500ms for animation duration
+
   // Enable requirements button when games are displayed
   $("#checkRequirements")
     .prop("disabled", false)
@@ -61,6 +67,9 @@ export function displayGames(games) {
 
 export function findGames(userState, currentLang) {
   const vibe = userState.mood ? moodToVibe[userState.mood] : null;
+
+  // Show loading overlay
+  showLoadingOverlay();
 
   if (vibe) {
     // Check if user entered Steam nickname
@@ -246,6 +255,9 @@ export function findGames(userState, currentLang) {
 
 
 export function dontCare(currentLang) {
+  // Show loading overlay
+  showLoadingOverlay();
+
   fetch("http://127.0.0.1:8000/random")
     .then((r) => r.json())
     .then((data) => {
@@ -283,8 +295,14 @@ export function dontCare(currentLang) {
           transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
         });
       }, 50);
+
+      // Hide loading overlay after animation completes
+      setTimeout(() => {
+        hideLoadingOverlay();
+      }, 550); // 50ms delay + 500ms animation duration
     })
     .catch((error) => {
+      hideLoadingOverlay();
       resetPopupVisible();
       showErrorPopup(translations[currentLang]["server-error"], currentLang);
     });
