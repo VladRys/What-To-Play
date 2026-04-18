@@ -16,7 +16,7 @@ $(document).ready(function () {
     userState = { time: null, mood: null, single: null },
     isResetAnimating = false;
 
-  // Mouse tracking
+  // Mouse tracking for buttons - tracks cursor position relative to button for glow effect
   $(".option-btn, .action-btn").on("mousemove", function (e) {
     const rect = this.getBoundingClientRect();
     $(this).css({
@@ -63,7 +63,7 @@ $(document).ready(function () {
       });
   });
 
-  // Ripple effect
+  // Ripple effect on button click - creates expanding circle animation from click position
   $(".option-btn").on("click", function (e) {
     const rect = this.getBoundingClientRect();
     $('<span class="ripple"></span>')
@@ -75,7 +75,7 @@ $(document).ready(function () {
     setTimeout(() => $(this).find(".ripple").remove(), 600);
   });
 
-  // Language switcher
+  // Language switcher with typewriter effect - erases old text and types new text character by character
   $(".lang-btn").on("click", function () {
     $(".lang-btn").removeClass("active");
     $(this).addClass("active");
@@ -98,7 +98,7 @@ $(document).ready(function () {
       }
     });
 
-    // Handle placeholder translations with typewriter effect
+    // Handle placeholder translations with typewriter effect for input fields
     $("[data-translate-placeholder]").each(function () {
       const key = $(this).data("translate-placeholder");
       if (translations[currentLang]?.[key]) {
@@ -202,7 +202,7 @@ $(document).ready(function () {
     }, 200);
   });
 
-  // Option button click
+  // Option button click handler - manages selection animation with gradient and grid fade-in effects
   $(".option-btn").on("click", function (e) {
     const $this = $(this);
     if ($this.hasClass("selected") || $this.hasClass("selecting")) return;
@@ -217,7 +217,7 @@ $(document).ready(function () {
       ((e.clientY - rect.top) / rect.height) * 100 + "%",
     );
 
-    // Fade out 1
+    // Unselect previously selected button in same group with fade-out animation
     $this.siblings(".selected").addClass("unselecting");
 
     setTimeout(() => {
@@ -240,14 +240,14 @@ $(document).ready(function () {
       (Math.random() * 10 - 5).toFixed(1) + "deg",
     );
 
-    // Easing-helper
+    // Initialize opacity variables for gradient and grid animations
     this.style.setProperty("--gradient-opacity", "0");
     this.style.setProperty("--topo-opacity", "0");
 
     setTimeout(() => {
       $this.addClass("selected fade-in").removeClass("selecting");
 
-      // Gradient easing
+      // Fade in gradient background effect
       let opacity = 0;
       const fadeIn = setInterval(() => {
         opacity += 0.02;
@@ -258,7 +258,7 @@ $(document).ready(function () {
         }
       }, 16);
 
-      // Grid easing
+      // Fade in grid pattern effect (delayed for visual depth)
       setTimeout(() => {
         let topoOpacity = 0;
         const topoFadeIn = setInterval(() => {
@@ -272,6 +272,8 @@ $(document).ready(function () {
       }, 300);
     }, 300);
 
+    // Update user state based on which question section the button belongs to
+    // Section 1: Time preference, Section 2: Mood, Section 3: Single/With friends
     const idx = $this.closest(".question-section").index() + 1;
     const text = $this.text().trim();
 
@@ -284,7 +286,7 @@ $(document).ready(function () {
     );
   });
 
-  // Reset
+  // Reset button handler - clears all selected filters with explosion animation
   $("#reset").on("click", function (e) {
     if (isResetAnimating || $(".option-btn.selected").length === 0) return;
     isResetAnimating = true;
@@ -294,6 +296,7 @@ $(document).ready(function () {
       .prop("disabled", true)
       .css({ opacity: 0.4, cursor: "not-allowed" });
 
+    // Create expanding red shockwave animation from click position
     const $shockwave = $('<div class="shockwave"></div>')
       .css({
         position: "absolute",
@@ -317,12 +320,13 @@ $(document).ready(function () {
       () => $shockwave.remove(),
     );
 
+    // For each selected button: fade out effects and create particle explosion from button center
     $(".option-btn.selected").each(function () {
       const rect = this.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2 + window.scrollX,
-        cy = rect.top + rect.height / 2 + window.scrollY;
+      const cx = rect.left + rect.width / 2,
+        cy = rect.top + rect.height / 2;
 
-      // Fade out 2
+      // Fade out gradient and grid effects
       this.style.setProperty("--gradient-opacity", "1");
       this.style.setProperty("--topo-opacity", "1");
 
@@ -338,6 +342,7 @@ $(document).ready(function () {
         }
       }, 16);
 
+      // Create particle explosion from button center (24 main particles + 20 sparkles)
       for (let i = 0; i < 24; i++) createParticle(cx, cy, "main");
       for (let i = 0; i < 20; i++) createParticle(cx, cy, "sparkle");
 
@@ -370,7 +375,7 @@ $(document).ready(function () {
     fetchSteamLibrary(currentLang);
   });
 
-  // Requirements check btn
+  // Requirements check button - toggles special mode to select a game and view its Steam requirements
   let requirementsMode = false;
   $("#checkRequirements").on("click", function () {
     // Check if any games are displayed
@@ -385,7 +390,7 @@ $(document).ready(function () {
     requirementsMode = !requirementsMode;
     $(this).toggleClass("active");
 
-    // Создаем слой-подложку, если его еще нет
+    // Create blur overlay element if it doesn't exist yet
     if ($(".requirements-overlay").length === 0) {
       $("body").append('<div class="requirements-overlay"></div>');
     }
@@ -398,7 +403,7 @@ $(document).ready(function () {
         '<div class="requirements-notification">' + notificationText + "</div>",
       );
 
-      // Включаем идеальный блюр-слой и поднимаем карточки
+      // Activate blur overlay and elevate game cards with slight scale effect
       $(".requirements-overlay").addClass("active");
       $("#gameResult").addClass("elevated");
       $(".game-card").css({
@@ -414,7 +419,6 @@ $(document).ready(function () {
         $(".requirements-notification").remove();
       }, 500);
 
-      // Выключаем блюр with smooth transition but prevent card scale flicker
       $(".game-card").addClass("no-transition");
       $(".game-card").css({ transform: "scale(1)" });
       $(".requirements-overlay").removeClass("active");
@@ -425,7 +429,7 @@ $(document).ready(function () {
     }
   });
 
-  // Game card click handler for requirements check
+  // Game card click handler
   $(document).on("click", ".game-card", function () {
     if (requirementsMode) {
       const appid = $(this).data("appid");
@@ -449,7 +453,6 @@ $(document).ready(function () {
           $(".requirements-notification").remove();
         }, 500);
 
-        // Отключаем оверлей immediately without transition to prevent flicker
         $(".requirements-overlay").removeClass("active");
         $("#gameResult").removeClass("elevated");
         $(".game-card").addClass("no-transition");
@@ -466,6 +469,7 @@ $(document).ready(function () {
     findGames(userState, currentLang);
   });
 
+  // Expose utility functions globally for debugging/testing
   window.getUserState = () => userState;
   window.resetUserState = () => {
     userState = { time: null, mood: null, single: null };

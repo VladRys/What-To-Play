@@ -4,6 +4,7 @@ import { moodToVibe, translations } from "./config.js";
 import { showErrorPopup, showSuccessPopup, resetPopupVisible, showLoadingOverlay, hideLoadingOverlay } from "./ui.js";
 
 export function displayGames(games) {
+  // Load previously seen games from localStorage to avoid duplicates
   const seenGames = new Set(
     localStorage.getItem("seenGames")?.split(",") || [],
   );
@@ -36,7 +37,7 @@ export function displayGames(games) {
     $gameResult.append($card);
     seenGames.add(game.appid);
 
-    // Animate card appearance with staggered delay
+    // Animate card appearance with staggered delay (each card appears 150ms after the previous)
     setTimeout(
       () => {
         $card.css({
@@ -50,14 +51,15 @@ export function displayGames(games) {
     );
   });
 
-  // Save seen games to localStorage
+  // Save seen games to localStorage to remember them for future requests
   localStorage.setItem("seenGames", Array.from(seenGames).join(","));
 
   // Hide loading overlay after all card animations complete
+  // Calculate max delay: 50ms initial + 150ms per card + 500ms animation duration
   const maxDelay = 50 + games.length * 150;
   setTimeout(() => {
     hideLoadingOverlay();
-  }, maxDelay + 500); // +500ms for animation duration
+  }, maxDelay + 500);
 
   // Enable requirements button when games are displayed
   $("#checkRequirements")
@@ -66,17 +68,18 @@ export function displayGames(games) {
 }
 
 export function findGames(userState, currentLang) {
+  // Convert mood text to vibe parameter (chill/sweat/brain)
   const vibe = userState.mood ? moodToVibe[userState.mood] : null;
 
-  // Show loading overlay
+  // Show loading overlay immediately when search starts
   showLoadingOverlay();
 
   if (vibe) {
-    // Check if user entered Steam nickname
+    // Check if user entered Steam nickname/ID to filter by their library
     const steamNickname = $("#steamNickname").val().trim();
 
     if (steamNickname) {
-      // Detect if input is Steam ID (17 digits) or nickname
+      // Detect if input is Steam ID (17 digits) or vanity URL nickname
       const isSteamId = /^\d{17}$/.test(steamNickname);
       const steamUrl = isSteamId
         ? `http://127.0.0.1:8000/owned-games/id/${steamNickname}`
@@ -97,10 +100,11 @@ export function findGames(userState, currentLang) {
 
           const userLibrary = libraryData.owned_games || [];
 
-          // Save to localStorage
+          // Save user's Steam library to localStorage for future use
           localStorage.setItem("steamLibrary", JSON.stringify(userLibrary));
 
           // Send POST request to /games/filters with library in body
+          // This endpoint filters games from user's library based on vibe
           const payload = {
             vibe: vibe,
             is_user_library: true,
@@ -151,7 +155,8 @@ export function findGames(userState, currentLang) {
           showErrorPopup(translations[currentLang]["server-error"], currentLang);
         });
     } else {
-      // Use regular vibe endpoint without Steam library
+      // Use regular vibe endpoint without Steam library filtering
+      // Returns 3 random games matching the vibe from the full database
       fetch(`http://127.0.0.1:8000/games/vibe/${vibe}`)
         .then((r) => r.json())
         .then((data) => {
@@ -184,7 +189,8 @@ export function findGames(userState, currentLang) {
         });
     }
   } else {
-    // Fallback to old endpoint if no vibe selected
+    // Fallback to old endpoint if no vibe selected (legacy behavior)
+    // Uses time/single/mood filters without vibe-based recommendation
     const seenGames = localStorage.getItem("seenGames") || "";
 
     const params = new URLSearchParams();
@@ -211,6 +217,7 @@ export function findGames(userState, currentLang) {
             showErrorPopup(data.message, currentLang);
             return;
           }
+          // If no games found with exclusions, try again without them
           localStorage.removeItem("seenGames");
           const params2 = new URLSearchParams();
           if (userState.single !== null && userState.single !== undefined)
@@ -255,9 +262,10 @@ export function findGames(userState, currentLang) {
 
 
 export function dontCare(currentLang) {
-  // Show loading overlay
+  // Show loading overlay when fetching random game
   showLoadingOverlay();
 
+  // Fetch a completely random game from the database (no filters applied)
   fetch("http://127.0.0.1:8000/random")
     .then((r) => r.json())
     .then((data) => {
@@ -286,7 +294,7 @@ export function dontCare(currentLang) {
       const $card = $(gameCard);
       $("#gameResult").html($card).show();
 
-      // Animate card appearance
+      // Animate card appearance (single card, no stagger needed)
       setTimeout(() => {
         $card.css({
           opacity: 1,
@@ -297,9 +305,10 @@ export function dontCare(currentLang) {
       }, 50);
 
       // Hide loading overlay after animation completes
+      // 50ms initial delay + 500ms animation duration
       setTimeout(() => {
         hideLoadingOverlay();
-      }, 550); // 50ms delay + 500ms animation duration
+      }, 550);
     })
     .catch((error) => {
       hideLoadingOverlay();
