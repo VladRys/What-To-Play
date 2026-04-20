@@ -275,7 +275,8 @@ $(document).ready(function () {
     // Update user state based on which question section the button belongs to
     // Section 1: Time preference, Section 2: Mood, Section 3: Single/With friends
     const idx = $this.closest(".question-section").index() + 1;
-    const text = $this.text().trim();
+    // Normalize text: remove extra whitespace and newlines
+    const text = $this.text().trim().replace(/\s+/g, " ");
 
     if (idx === 1) userState.time = text;
     else if (idx === 2) userState.mood = text;

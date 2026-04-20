@@ -1,6 +1,6 @@
 // Game-related functionality
 
-import { moodToVibe, translations } from "./config.js";
+import { moodToVibe, translations, timeToDuration } from "./config.js";
 import { showErrorPopup, showSuccessPopup, resetPopupVisible, showLoadingOverlay, hideLoadingOverlay } from "./ui.js";
 
 export function displayGames(games) {
@@ -71,193 +71,69 @@ export function findGames(userState, currentLang) {
   // Convert mood text to vibe parameter (chill/sweat/brain)
   const vibe = userState.mood ? moodToVibe[userState.mood] : null;
 
+  // Map UI values to backend filter values
+  const duration = userState.time ? timeToDuration[userState.time] : null;
+  const players = userState.single !== null && userState.single !== undefined
+    ? (userState.single ? "Single-player" : "Multi-player")
+    : null;
+
+  // Validate that all filters are selected
+  if (!vibe || !duration || !players) {
+    resetPopupVisible();
+    showErrorPopup(
+      translations[currentLang]["select-all-filters"],
+      currentLang,
+    );
+    return;
+  }
+
   // Show loading overlay immediately when search starts
   showLoadingOverlay();
 
-  if (vibe) {
-    // Check if user entered Steam nickname/ID to filter by their library
-    const steamNickname = $("#steamNickname").val().trim();
+  // Use new /games/filters endpoint with smart filtering system
+  const payload = {
+    vibe: vibe,
+    duration: duration,
+    players: players,
+    is_user_library: false,
+  };
 
-    if (steamNickname) {
-      // Detect if input is Steam ID (17 digits) or vanity URL nickname
-      const isSteamId = /^\d{17}$/.test(steamNickname);
-      const steamUrl = isSteamId
-        ? `http://127.0.0.1:8000/owned-games/id/${steamNickname}`
-        : `http://127.0.0.1:8000/owned-games/vanity/${steamNickname}`;
-
-      fetch(steamUrl)
-        .then((r) => r.json())
-        .then((libraryData) => {
-          if (libraryData.error || libraryData.status === 404) {
-            hideLoadingOverlay();
-            resetPopupVisible();
-            showErrorPopup(
-              libraryData.message || "Failed to fetch Steam library",
-              currentLang,
-            );
-            return;
-          }
-
-          const userLibrary = libraryData.owned_games || [];
-
-          // Save user's Steam library to localStorage for future use
-          localStorage.setItem("steamLibrary", JSON.stringify(userLibrary));
-
-          // Send POST request to /games/filters with library in body
-          // This endpoint filters games from user's library based on vibe
-          const payload = {
-            vibe: vibe,
-            is_user_library: true,
-            library: userLibrary
-          };
-
-          fetch("http://127.0.0.1:8000/games/filters", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-          })
-            .then((r) => r.json())
-            .then((data) => {
-              if (data.error) {
-                hideLoadingOverlay();
-                resetPopupVisible();
-                showErrorPopup(
-                  data.message || "Failed to fetch games",
-                  currentLang,
-                );
-                return;
-              }
-
-              const games = data.games || [];
-
-              if (games.length === 0) {
-                hideLoadingOverlay();
-                resetPopupVisible();
-                showErrorPopup("No games found", currentLang);
-                return;
-              }
-
-              displayGames(games);
-            })
-            .catch((error) => {
-              console.error("Error fetching games:", error);
-              hideLoadingOverlay();
-              resetPopupVisible();
-              showErrorPopup(translations[currentLang]["server-error"], currentLang);
-            });
-        })
-        .catch((error) => {
-          console.error("Error fetching Steam library:", error);
-          hideLoadingOverlay();
-          resetPopupVisible();
-          showErrorPopup(translations[currentLang]["server-error"], currentLang);
-        });
-    } else {
-      // Use regular vibe endpoint without Steam library filtering
-      // Returns 3 random games matching the vibe from the full database
-      fetch(`http://127.0.0.1:8000/games/vibe/${vibe}`)
-        .then((r) => r.json())
-        .then((data) => {
-          if (data.error) {
-            hideLoadingOverlay();
-            resetPopupVisible();
-            showErrorPopup(
-              data.message || "Failed to fetch games by vibe",
-              currentLang,
-            );
-            return;
-          }
-
-          const games = data.games || [];
-
-          if (games.length === 0) {
-            hideLoadingOverlay();
-            resetPopupVisible();
-            showErrorPopup("No games found for this vibe", currentLang);
-            return;
-          }
-
-          displayGames(games);
-        })
-        .catch((error) => {
-          console.error("Error fetching games by vibe:", error);
-          hideLoadingOverlay();
-          resetPopupVisible();
-          showErrorPopup(translations[currentLang]["server-error"], currentLang);
-        });
-    }
-  } else {
-    // Fallback to old endpoint if no vibe selected (legacy behavior)
-    // Uses time/single/mood filters without vibe-based recommendation
-    const seenGames = localStorage.getItem("seenGames") || "";
-
-    const params = new URLSearchParams();
-    if (seenGames) params.append("exclude", seenGames);
-    if (userState.single !== null && userState.single !== undefined)
-      params.append("solo", userState.single);
-    if (userState.mood) params.append("mood", userState.mood);
-    if (userState.time) params.append("time", userState.time);
-
-    fetch(`http://127.0.0.1:8000/games/random?${params.toString()}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.error) {
-          resetPopupVisible();
-          showErrorPopup(data.message || "Database access error", currentLang);
-          return;
-        }
-
-        const games = data.games || [];
-
-        if (games.length === 0) {
-          if (data.message) {
-            resetPopupVisible();
-            showErrorPopup(data.message, currentLang);
-            return;
-          }
-          // If no games found with exclusions, try again without them
-          localStorage.removeItem("seenGames");
-          const params2 = new URLSearchParams();
-          if (userState.single !== null && userState.single !== undefined)
-            params2.append("solo", userState.single);
-          if (userState.mood) params2.append("mood", userState.mood);
-          if (userState.time) params2.append("time", userState.time);
-
-          fetch(`http://127.0.0.1:8000/games/random?${params2.toString()}`)
-            .then((r) => r.json())
-            .then((data) => {
-              if (data.error) {
-                resetPopupVisible();
-                showErrorPopup(
-                  data.message || "Database access error",
-                  currentLang,
-                );
-                return;
-              }
-              const games = data.games || [];
-              if (games.length === 0) {
-                resetPopupVisible();
-                showErrorPopup(
-                  "No games found matching your criteria",
-                  currentLang,
-                );
-                return;
-              }
-              displayGames(games);
-            });
-          return;
-        }
-
-        displayGames(games);
-      })
-      .catch((error) => {
+  fetch("http://127.0.0.1:8000/games/filters", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  })
+    .then((r) => r.json())
+    .then((data) => {
+      if (data.error) {
         hideLoadingOverlay();
         resetPopupVisible();
-        showErrorPopup(translations[currentLang]["server-error"], currentLang);
-      });
-    }
+        showErrorPopup(
+          data.message || "Failed to fetch games",
+          currentLang,
+        );
+        return;
+      }
+
+      const games = data.games || [];
+
+      if (games.length === 0) {
+        hideLoadingOverlay();
+        resetPopupVisible();
+        showErrorPopup("No games found", currentLang);
+        return;
+      }
+
+      displayGames(games);
+    })
+    .catch((error) => {
+      console.error("Error fetching games:", error);
+      hideLoadingOverlay();
+      resetPopupVisible();
+      showErrorPopup(translations[currentLang]["server-error"], currentLang);
+    });
 }
 
 

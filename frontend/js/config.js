@@ -24,6 +24,7 @@ export const translations = {
     "steam-placeholder": "Enter Steam nickname...",
     "fetch-library": "Fetch Library",
     "select-game": "Select a game to check",
+    "select-all-filters": "Please select all filters (Mood, Time, and Mode) for best results",
   },
   ru: {
     subtitle: "Во что поиграть сегодня",
@@ -48,6 +49,7 @@ export const translations = {
     "steam-placeholder": "Введите никнейм Steam...",
     "fetch-library": "Загрузить библиотеку",
     "select-game": "Выбери игру для проверки",
+    "select-all-filters": "Пожалуйста, выберите все фильтры (Вайб, Время и Режим) для лучших результатов",
   },
   uk: {
     subtitle: "У Що Пограти Сьогодні",
@@ -72,6 +74,7 @@ export const translations = {
     "steam-placeholder": "Введіть нікнейм Steam...",
     "fetch-library": "Завантажити бібліотеку",
     "select-game": "Вибери гру для перевірки",
+    "select-all-filters": "Будь ласка, виберіть всі фільтри (Настрій, Час і Режим) для найкращих результатів",
   },
 };
 
@@ -79,4 +82,28 @@ export const moodToVibe = {
   Chill: "chill",
   Sweat: "sweat",
   Think: "brain",
+};
+
+// Map UI time values to backend filter values
+export const timeToDuration = {
+  "30 min": "short",
+  "30min": "short",
+  "30\nmin": "short",
+  "30 \nmin": "short",
+  "1-2 hours": "medium",
+  "1-2hours": "medium",
+  "A long while": "long",
+  "A long while": "long",
+  " 30 мин": "short",
+  "30мин": "short",
+  "30 \nмин": "short",
+  "1-2 часа": "medium",
+  "1-2часа": "medium",
+  "Долго": "long",
+  " 30 хв": "short",
+  "30хв": "short",
+  "30 \nхв": "short",
+  "1-2 години": "medium",
+  "1-2години": "medium",
+  "Довго": "long",
 };
