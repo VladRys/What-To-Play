@@ -1,8 +1,10 @@
 import logging
+import random
 
 from backend.app.db.database import SqliteDatabase
 from backend.app.config import config as cfg
 from backend.app.exceptions import UnknownVibeException
+from backend.app.repositories import utils
 
 class GamesRepository:
     """Repository for managing games in the local database"""
@@ -75,7 +77,6 @@ class GamesRepository:
     def add_game(self, game: dict) -> None:
         """Add a game to the database"""
         try:
-            # Add game to main table. Use INSERT OR IGNORE to prevent duplicates by appid.
             self.db.execute("""
                 INSERT OR IGNORE INTO games
                 (appid, name, genres, categories, is_free, positive, negative)
@@ -90,7 +91,6 @@ class GamesRepository:
                 game["negative"]
             ))
 
-            # Parse and store genre IDs in a single row per game.
             if game.get("genres"):
                 genres_list = [g.strip() for g in game["genres"].split(",") if g.strip()]
                 genre_ids = [genre_id for genre_name in genres_list if (genre_id := self._get_or_create_genre_id(genre_name))]
@@ -144,7 +144,7 @@ class GamesRepository:
             "negative": row[6],
         }
         
-    def filter_games(self, genre: str | None = None) -> list[dict]:
+    def filter_games_by_genre(self, genre: str | None = None) -> list[dict]:
         """Filter games by genre name"""
         if genre:
             self.logger.info(f"Filtering games by genre: {genre}")
@@ -161,7 +161,7 @@ class GamesRepository:
         
     def get_games_by_vibe(self, vibe: str) -> list[dict]:
         """Get 3 random games from different genres based on vibe from VIBES_MAP"""
-        if vibe not in cfg.VIBES_MAP:
+        if cfg.VIBE_CHECKING and vibe not in cfg.VIBES_MAP:
             self.logger.error(f"Unknown vibe: {vibe}")
             raise UnknownVibeException 
             
@@ -169,11 +169,9 @@ class GamesRepository:
         if not genres:
             return []
             
-        # Get games from different genres, preferring variety
         games = []
         selected_appids = set()
         
-        # Try to get one game from each genre first
         for genre in genres:
             if len(games) >= 3:
                 break
@@ -206,7 +204,6 @@ class GamesRepository:
                     })
                     selected_appids.add(row[0])
         
-        # If we don't have 3 games yet, fill with random games from any of the vibe genres
         if len(games) < 3:
             remaining_needed = 3 - len(games)
             genre_ids = []
@@ -257,3 +254,36 @@ class GamesRepository:
         
         self.logger.info(f"Fetched {len(games)} games for vibe '{vibe}': {[g['name'] for g in games]}")
         return games
+    
+    def smart_filter_games(self, vibe: str, mode: str | None = None, time_pref: str | None = None, limit: int = 3) -> list[dict]:
+        if cfg.VIBE_CHECKING and vibe not in cfg.VIBES_MAP:
+            self.logger.error(f"Unknown vibe: {vibe}")
+            raise UnknownVibeException
+        
+        rows = self.db.select_all("""
+            SELECT appid, name, genres, categories, is_free, positive, negative
+            FROM games
+        """)
+
+        games = []
+        for row in rows:
+            game = {
+                "appid": row[0],
+                "name": row[1],
+                "genres": row[2],
+                "categories": row[3],
+                "is_free": bool(row[4]),
+                "positive": row[5],
+                "negative": row[6],
+            }
+
+            score = utils.calculate_game_score(game, vibe, mode, time_pref)
+            game["score"] = score
+            games.append(game)
+
+        games.sort(key=lambda x: x["score"], reverse=True)
+
+        TOP_K = 150
+        top_games = games[:TOP_K]
+
+        return random.sample(top_games, min(limit, len(top_games)))

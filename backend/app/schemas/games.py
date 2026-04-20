@@ -19,15 +19,19 @@ class UserLibraryGame(Game):
     img_icon_url: str | None
 
 class FilteredGamesRequest(BaseModel):
-    vibe: str | None = None
     is_user_library: bool = False
     library: list[UserLibraryGame] = []
+    vibe: str | None = None
+    player_counts: str | None = None
+    time_perf: str | None = None
     
 class FilteredGamesResponse(BaseModel):
     games: list[Game] | list[GameFetched] | list = []
     vibe: str | None = None
+    player_counts: str | None = None
+    time_perf: str | None = None
     message: str | None = None
-    is_user_library: bool | None = None
+    is_user_library: bool | None = False
     status: int = 404
 
 class VibesGamesResponse(BaseModel):
@@ -41,3 +45,5 @@ class GetGameInfoResponse(BaseModel):
     data: GameFetched | list[GameFetched] | list = []
     message: str
     status: int
+    
+    
