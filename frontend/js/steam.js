@@ -5,7 +5,9 @@ import {
   showSuccessPopup,
   resetPopupVisible,
   getPopupVisible,
+  showConfirmPopup,
 } from "./ui.js";
+import { translations } from "./config.js";
 
 // Input mode for Steam: "id" for 17-digit Steam ID, "nickname" for vanity URL
 export let steamInputMode = "nickname"; // Default to nickname mode
@@ -138,4 +140,23 @@ export function fetchSteamLibrary(currentLang) {
       $btn.prop("disabled", false).html(originalText);
       showErrorPopup(translations[currentLang]["server-error"], currentLang);
     });
+}
+
+export function clearNickname(currentLang) {
+  // Clear the Steam nickname field with user confirmation
+  const inputValue = $("#steamNickname").val().trim();
+
+  // Only show confirmation if there's actually something to clear
+  if (!inputValue) {
+    return;
+  }
+
+  // Show custom confirmation popup
+  showConfirmPopup(
+    translations[currentLang]["confirm-clear-nickname"],
+    currentLang,
+    () => {
+      $("#steamNickname").val("");
+    }
+  );
 }

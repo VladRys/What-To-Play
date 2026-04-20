@@ -4,7 +4,7 @@ import { translations, moodToVibe } from "./config.js";
 import { createParticle } from "./utils.js";
 import { showErrorPopup, showSuccessPopup, resetPopupVisible } from "./ui.js";
 import { displayGames, findGames, dontCare } from "./games.js";
-import { toggleSteamMode, fetchSteamLibrary, steamInputMode } from "./steam.js";
+import { toggleSteamMode, fetchSteamLibrary, clearNickname, steamInputMode } from "./steam.js";
 
 $(document).ready(function () {
   // Initialize requirements button as disabled
@@ -36,6 +36,15 @@ $(document).ready(function () {
 
   // Mouse tracking for steam-mode-btn
   $("#toggleSteamMode").on("mousemove", function (e) {
+    const rect = this.getBoundingClientRect();
+    $(this).css({
+      "--mouse-x": ((e.clientX - rect.left) / rect.width) * 100 + "%",
+      "--mouse-y": ((e.clientY - rect.top) / rect.height) * 100 + "%",
+    });
+  });
+
+  // Mouse tracking for clear-nickname-btn
+  $("#clearNickname").on("mousemove", function (e) {
     const rect = this.getBoundingClientRect();
     $(this).css({
       "--mouse-x": ((e.clientX - rect.left) / rect.width) * 100 + "%",
@@ -374,6 +383,11 @@ $(document).ready(function () {
   // Fetch Steam library btn
   $("#fetchSteamLibrary").on("click", function () {
     fetchSteamLibrary(currentLang);
+  });
+
+  // Clear Steam nickname btn
+  $("#clearNickname").on("click", function () {
+    clearNickname(currentLang);
   });
 
   // Requirements check button - toggles special mode to select a game and view its Steam requirements

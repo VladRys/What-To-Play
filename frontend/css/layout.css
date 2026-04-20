@@ -55,11 +55,12 @@
   width: 100%;
   position: relative;
   z-index: 52;
+  animation: buttonsEntrance 1s ease-out 0.6s both;
 }
 
 .steam-input-section {
   display: grid;
-  grid-template-columns: minmax(80px, auto) 1fr;
+  grid-template-columns: minmax(80px, auto) 1fr minmax(60px, auto);
   gap: 10px;
   align-items: center;
   justify-content: center;

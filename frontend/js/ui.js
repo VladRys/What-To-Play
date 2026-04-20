@@ -76,11 +76,10 @@ export function showSuccessPopup(message) {
   $("html").append(popup);
 
   overlay.hide().fadeIn(300);
-  // Animate popup entrance with slide-up and fade-in effect
-  popup.css({ opacity: 0, transform: "translate(-50%, -40%)" }).show().animate(
+  // Animate popup entrance with fade-in effect only
+  popup.css({ opacity: 0, transform: "translate(-50%, -50%)" }).show().animate(
     {
       opacity: 1,
-      marginTop: "-=20px",
     },
     300,
   );
@@ -90,7 +89,6 @@ export function showSuccessPopup(message) {
     popup.animate(
       {
         opacity: 0,
-        marginTop: "+=20px",
       },
       300,
       () => {
@@ -131,4 +129,71 @@ export function hideLoadingOverlay() {
   if (overlay.length) {
     overlay.removeClass("active");
   }
+}
+
+export function showConfirmPopup(message, currentLang = "en", onConfirm) {
+  // Display confirmation popup with OK/Cancel buttons
+  // Returns early if another popup is already visible to prevent overlap
+  if (popupVisible) return;
+  popupVisible = true;
+
+  const overlay = $('<div class="confirm-popup-overlay"></div>');
+  const popup = $(`
+    <div class="confirm-popup">
+      <div class="confirm-popup-content">
+        <div class="confirm-popup-icon">❓</div>
+        <h3>Confirm</h3>
+        <p>${message}</p>
+        <div class="confirm-popup-buttons">
+          <button class="confirm-btn cancel-btn">Cancel</button>
+          <button class="confirm-btn confirm-ok-btn">OK</button>
+        </div>
+      </div>
+    </div>
+  `);
+
+  $("html").append(overlay);
+  $("html").append(popup);
+
+  overlay.hide().fadeIn(300);
+  popup.css({ opacity: 0, transform: "translate(-50%, -50%)" }).show().animate(
+    {
+      opacity: 1,
+    },
+    300,
+  );
+
+  // Handle button clicks
+  popup.find(".cancel-btn").on("click", function() {
+    popup.animate(
+      {
+        opacity: 0,
+      },
+      300,
+      () => {
+        popup.remove();
+        overlay.fadeOut(300, () => {
+          overlay.remove();
+          popupVisible = false;
+        });
+      },
+    );
+  });
+
+  popup.find(".confirm-ok-btn").on("click", function() {
+    popup.animate(
+      {
+        opacity: 0,
+      },
+      300,
+      () => {
+        popup.remove();
+        overlay.fadeOut(300, () => {
+          overlay.remove();
+          popupVisible = false;
+          if (onConfirm) onConfirm();
+        });
+      },
+    );
+  });
 }

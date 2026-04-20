@@ -3,16 +3,40 @@
 import { moodToVibe, translations, timeToDuration } from "./config.js";
 import { showErrorPopup, showSuccessPopup, resetPopupVisible, showLoadingOverlay, hideLoadingOverlay } from "./ui.js";
 
-export function displayGames(games) {
+export function displayGames(games, duration = null) {
   // Load previously seen games from localStorage to avoid duplicates
   const seenGames = new Set(
     localStorage.getItem("seenGames")?.split(",") || [],
   );
   const $gameResult = $("#gameResult").empty().show();
 
+  // Define genre filters based on time duration
+  const timeGenres = {
+    short: ["casual", "arcade", "indie", "puzzle", "racing", "sports"],
+    medium: ["action", "adventure", "simulation", "fps", "competitive", "multiplayer"],
+    long: ["rpg", "strategy", "simulation", "fps", "competitive", "multiplayer"],
+  };
+
   games.forEach((game, index) => {
     const Image = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`;
     const genres = game.genres || "Unknown Genre";
+    const genresList = typeof genres === "string" ? genres.split(",") : genres;
+
+    // Filter genres based on time duration if selected
+    let filteredGenres = genresList;
+    if (duration && timeGenres[duration]) {
+      const relevantGenres = timeGenres[duration];
+      filteredGenres = genresList.filter(genre =>
+        relevantGenres.some(rg => genre.toLowerCase().includes(rg))
+      );
+      // If no relevant genres found, show all genres (fallback)
+      if (filteredGenres.length === 0) {
+        filteredGenres = genresList;
+      }
+    }
+
+    // Limit to 3 genres
+    const limitedGenres = filteredGenres.slice(0, 3).join(", ");
     const categories = game.categories || "";
     const isMultiplayer = categories.toLowerCase().includes("multi-player");
 
@@ -24,7 +48,7 @@ export function displayGames(games) {
         </div>
         <div class="game-info">
           <h3 class="game-title">${game.name || "Unknown Game"}</h3>
-          <p class="game-genre">${typeof genres === "string" ? genres : genres.join(", ")}</p>
+          <p class="game-genre">${limitedGenres}</p>
           <div class="game-meta">
             <span class="game-time">${game.is_free ? "Free to Play" : "Paid"}</span>
             <span class="game-difficulty">${game.positive || 0 > game.negative || 0 ? "Positive Reviews" : "Mixed Reviews"}</span>
@@ -51,6 +75,26 @@ export function displayGames(games) {
     );
   });
 
+  // Adjust container width based on number of games (only for 1 or 2 games)
+  const gameCount = games.length;
+  if (gameCount === 1) {
+    $gameResult.css({
+      "max-width": "350px",
+      "place-items": "center",
+    });
+  } else if (gameCount === 2) {
+    $gameResult.css({
+      "max-width": "720px",
+      "place-items": "center",
+    });
+  } else {
+    // For 3 games, reset to original settings
+    $gameResult.css({
+      "max-width": "",
+      "place-items": "",
+    });
+  }
+
   // Save seen games to localStorage to remember them for future requests
   localStorage.setItem("seenGames", Array.from(seenGames).join(","));
 
@@ -73,9 +117,14 @@ export function findGames(userState, currentLang) {
 
   // Map UI values to backend filter values
   const duration = userState.time ? timeToDuration[userState.time] : null;
+  // Backend expects "single" or "multi" for player_counts, not "Single-player" or "Multi-player"
   const players = userState.single !== null && userState.single !== undefined
-    ? (userState.single ? "Single-player" : "Multi-player")
+    ? (userState.single ? "single" : "multi")
     : null;
+
+  // If vibe is not selected but time or mode is selected, use a default vibe
+  // Backend requires vibe to work, so we use "chill" as a neutral default
+  const vibeToSend = vibe || (duration || players ? "chill" : null);
 
   // Validate that all filters are selected
   if (!vibe || !duration || !players) {
@@ -92,9 +141,9 @@ export function findGames(userState, currentLang) {
 
   // Use new /games/filters endpoint with smart filtering system
   const payload = {
-    vibe: vibe,
-    duration: duration,
-    players: players,
+    vibe: vibeToSend,
+    time_perf: duration,
+    player_counts: players,
     is_user_library: false,
   };
 
@@ -126,7 +175,38 @@ export function findGames(userState, currentLang) {
         return;
       }
 
-      displayGames(games);
+      // Apply hard filtering on frontend based on mode only
+      // Backend uses scoring system for time, which works better than strict genre filtering
+      let filteredGames = games;
+
+      // Filter by mode
+      if (players) {
+        if (players === "single") {
+          // Filter out games with Multi-player in categories
+          filteredGames = games.filter(game => {
+            const categories = (game.categories || "").toLowerCase();
+            return !categories.includes("multi-player");
+          });
+        } else if (players === "multi") {
+          // Filter out games with Single-player in categories
+          filteredGames = games.filter(game => {
+            const categories = (game.categories || "").toLowerCase();
+            return categories.includes("multi-player") || !categories.includes("single-player");
+          });
+        }
+      }
+
+      if (filteredGames.length === 0) {
+        hideLoadingOverlay();
+        resetPopupVisible();
+        showErrorPopup("No games found matching your criteria", currentLang);
+        return;
+      }
+
+      // Take up to 3 games from filtered results
+      const gamesToShow = filteredGames.slice(0, 3);
+
+      displayGames(gamesToShow, duration);
     })
     .catch((error) => {
       console.error("Error fetching games:", error);
@@ -148,6 +228,9 @@ export function dontCare(currentLang) {
       const game = data.game || {};
       const Image = data.header_image || "img/testimg.png";
       const genres = game.genres || "Unknown Genre";
+      // Limit genres to 3 for cleaner display
+      const genresList = typeof genres === "string" ? genres.split(",") : genres;
+      const limitedGenres = genresList.slice(0, 3).join(", ");
       const categories = game.categories || "";
       const isMultiplayer = categories.toLowerCase().includes("multi-player");
       const gameCard = `
@@ -158,7 +241,7 @@ export function dontCare(currentLang) {
           </div>
           <div class="game-info">
             <h3 class="game-title">${game.name || "Unknown Game"}</h3>
-            <p class="game-genre">${typeof genres === "string" ? genres : genres.join(", ")}</p>
+            <p class="game-genre">${limitedGenres}</p>
             <div class="game-meta">
               <span class="game-time">${game.is_free ? "Free to Play" : "Paid"}</span>
               <span class="game-difficulty">${game.positive || 0 > game.negative || 0 ? "Positive Reviews" : "Mixed Reviews"}</span>

@@ -101,7 +101,6 @@
       rgba(239, 68, 68, 0.05) 0%,
       transparent 70%
     );
-  animation: particleFloat 4s ease-in-out infinite;
   pointer-events: none;
 }
 
@@ -228,7 +227,6 @@
       rgba(34, 197, 94, 0.05) 0%,
       transparent 70%
     );
-  animation: particleFloatGreen 4s ease-in-out infinite;
   pointer-events: none;
 }
 
@@ -360,4 +358,131 @@
 .requirements-overlay.active {
   opacity: 1;
   pointer-events: auto;
+}
+
+.confirm-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+}
+
+.confirm-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+}
+
+.confirm-popup-content {
+  background:
+    linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(20, 20, 40, 0.95)),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 10px,
+      rgba(59, 130, 246, 0.05) 10px,
+      rgba(59, 130, 246, 0.05) 12px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 10px,
+      rgba(59, 130, 246, 0.05) 10px,
+      rgba(59, 130, 246, 0.05) 12px
+    );
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow:
+    0 0 40px rgba(59, 130, 246, 0.3),
+    0 0 80px rgba(59, 130, 246, 0.2);
+  animation:
+    cyberpunkGlowBlue 2s ease-in-out infinite,
+    popupBounce 0.5s ease-out;
+  position: relative;
+  overflow: hidden;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.confirm-popup-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  animation: iconPulse 1s ease-in-out infinite;
+}
+
+.confirm-popup-content h3 {
+  color: #3b82f6;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  font-weight: 700;
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.confirm-popup-content p {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 25px;
+  font-size: 1rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.confirm-popup-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.confirm-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.cancel-btn {
+  background: rgba(100, 100, 100, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(100, 100, 100, 0.3);
+}
+
+.cancel-btn:hover {
+  background: rgba(100, 100, 100, 0.3);
+  color: #fff;
+}
+
+.confirm-ok-btn {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #fff;
+  border: 1px solid rgba(59, 130, 246, 0.5);
+}
+
+.confirm-ok-btn:hover {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+@keyframes cyberpunkGlowBlue {
+  0%, 100% {
+    box-shadow:
+      0 0 40px rgba(59, 130, 246, 0.3),
+      0 0 80px rgba(59, 130, 246, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 50px rgba(59, 130, 246, 0.5),
+      0 0 100px rgba(59, 130, 246, 0.3);
+  }
 }

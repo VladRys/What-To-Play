@@ -25,6 +25,8 @@ export const translations = {
     "fetch-library": "Fetch Library",
     "select-game": "Select a game to check",
     "select-all-filters": "Please select all filters (Mood, Time, and Mode) for best results",
+    "clear-nickname": "Clear",
+    "confirm-clear-nickname": "Are you sure you want to clear the Steam nickname?",
   },
   ru: {
     subtitle: "Во что поиграть сегодня",
@@ -50,6 +52,8 @@ export const translations = {
     "fetch-library": "Загрузить библиотеку",
     "select-game": "Выбери игру для проверки",
     "select-all-filters": "Пожалуйста, выберите все фильтры (Вайб, Время и Режим) для лучших результатов",
+    "clear-nickname": "Очистить",
+    "confirm-clear-nickname": "Вы уверены, что хотите очистить никнейм Steam?",
   },
   uk: {
     subtitle: "У Що Пограти Сьогодні",
@@ -75,6 +79,8 @@ export const translations = {
     "fetch-library": "Завантажити бібліотеку",
     "select-game": "Вибери гру для перевірки",
     "select-all-filters": "Будь ласка, виберіть всі фільтри (Настрій, Час і Режим) для найкращих результатів",
+    "clear-nickname": "Очистити",
+    "confirm-clear-nickname": "Ви впевнені, що хочете очистити нікнейм Steam?",
   },
 };
 
