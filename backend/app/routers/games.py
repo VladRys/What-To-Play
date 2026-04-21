@@ -16,7 +16,7 @@ def random_game(repo = Depends(get_games_repo), logger = Depends(get_logger), se
 
 # TODO: completely refactor this endpoint, it's a mess, but it works for now, will be improved in the future
 @router.get("/games/random")
-def get_random_games(count: int = 6, exclude: str | None = None, solo: bool | None = None, mood: str | None = None, repo = Depends(get_games_repo), logger = Depends(get_logger)):
+def get_random_games(count: int = 6, exclude: str | None = None, solo: bool | None = None, mood: str | None = None, repo = Depends(get_games_repo)):
     try:
         games = repo.filter_games_by_genre()
         exclude_list = exclude.split(',') if exclude else []
@@ -89,54 +89,25 @@ def get_games_by_vibe(vibe: str, repo = Depends(get_games_repo), logger = Depend
         return VibesGamesResponse(vibe=vibe, message="Error getting games by vibe.")
     
 @router.post("/games/filters", response_model=FilteredGamesResponse)
-def get_games_with_filters(request: FilteredGamesRequest, repo = Depends(get_games_repo), logger = Depends(get_logger), game_service: GameService = Depends(get_games_service)) -> FilteredGamesResponse | GetGameInfoResponse:    
-    """Get games based on filters. Can be used to get games from user library (rn only fully random game) or get ganes based on filters from local database"""
-    logger.info(f"Fetching games with filters - Vibe: {request.vibe}, Player counts: {request.player_counts}, Time Perf: {request.time_perf} Is User Library: {request.is_user_library}, User Library Count: {len(request.library) if request.library else 0}")
-    # if request.is_user_library and request.library:
-    #     try:
-    #         game = random.choice(request.library)
-    #         enhanced_game = game_service.get_game_info_by_id(game.appid) 
-            
-    #         if enhanced_game:
-    #             return FilteredGamesResponse(
-    #                 games=[enhanced_game],
-    #                 message="Successfully fetched games by filters",
-    #                 status=200,
-    #                 is_user_library=request.is_user_library,
-    #                 vibe=request.vibe
-    #             )
-            
-    #         return FilteredGamesResponse(
-    #             games=[game], # TODO: Upd game count to 3
-    #             vibe=request.vibe,
-    #             message="Fetched game with filter from user library",
-    #             is_user_library=request.is_user_library,
-    #             status=200
-    #         ) 
-        
-    #     except Exception as e:
-    #         logger.error(f"Error processing games with user library: {str(e)}")
-    #         return FilteredGamesResponse(
-    #             vibe=request.vibe,
-    #             message="Error processing games with user library",
-    #             status=404
-    #         )
+def get_games_with_filters(request: FilteredGamesRequest, logger = Depends(get_logger), game_service: GameService = Depends(get_games_service)) -> FilteredGamesResponse:    
+    """Get games based on filters. Can be used to get games from user library or get games based on filters from local database"""
+    logger.info(f"Fetching games with filters - Vibe: {request.vibe}, Player counts: {request.player_counts}, Time Perf: {request.time_perf} Is User Library: {request.is_user_library}, User Library Count: {len(request.user_library) if request.user_library else 0}")
     
     try:
-        games = repo.smart_filter_games(request.vibe, request.player_counts, request.time_perf)
+        response = game_service.get_smart_filtered_games(request.user_library, request.is_user_library, request.vibe, request.player_counts, request.time_perf)
         return FilteredGamesResponse(
-            games=games, 
+            games=response,
             vibe=request.vibe,
             player_counts=request.player_counts,
             time_perf=request.time_perf,
-            message="Games from local database based on vibe filter", 
-            is_user_library=False, 
+            is_user_library=request.is_user_library,
+            message="Successfully filtered games",
             status=200
         )
     except Exception as e:
-        logger.error(f"Error getting games by vibe '{request.vibe}': {str(e)}")
+        logger.error(f"Error getting games with filters: {str(e)}")
         return FilteredGamesResponse(
             vibe=request.vibe,
-            message="Error processing filtered games from local database"
-            )
-        
+            message="Error processing filtered games",
+            status=404
+        )

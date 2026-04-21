@@ -20,7 +20,7 @@ class UserLibraryGame(Game):
 
 class FilteredGamesRequest(BaseModel):
     is_user_library: bool = False
-    library: list[UserLibraryGame] = []
+    user_library: list[UserLibraryGame] = []
     vibe: str | None = None
     player_counts: str | None = None
     time_perf: str | None = None

@@ -1,7 +1,11 @@
 import logging
 import requests
+import random
+from backend.app.config import config as cfg
 from backend.app.repositories.games import GamesRepository
-from backend.app.schemas.games import GameFetched
+from backend.app.schemas.games import GameFetched, UserLibraryGame
+from backend.app.exceptions import UnknownVibeException
+from backend.app.repositories.utils import calculate_game_score
 
 class GameService:
     def __init__(self, repo: GamesRepository, logger: logging.Logger = logging.getLogger(__name__)):
@@ -90,3 +94,33 @@ class GameService:
         except Exception as e:
             self.logger.warning(f"Error fetching reviews for app {appid}: {str(e)}")
             return (0, 0)
+        
+    def get_smart_filtered_games(self, user_libary: list[UserLibraryGame] | list, is_user_library: bool = False, vibe: str | None = None, player_counts: str | None = None, time_pref: str | None = None):
+        if cfg.VIBE_CHECKING and vibe not in cfg.VIBES_MAP:
+            self.logger.error(f"Unknown vibe: {vibe}")
+            raise UnknownVibeException
+        
+        if is_user_library and user_libary:
+            games = []
+            for game in user_libary:
+                dumped_game = game.model_dump()
+                score = calculate_game_score(dumped_game, vibe, player_counts, time_pref)
+                dumped_game["score"] = score
+                games.append(dumped_game)
+
+            games.sort(key=lambda x: x["score"], reverse=True)
+
+            TOP_K = 150
+            top_games = games[:TOP_K]
+
+            items = random.sample(top_games, min(3, len(top_games)))
+            
+            result = []
+            for item in items:
+                result.append(self.get_game_info_by_id(item['appid']))
+
+            return result            
+
+
+        self.logger.info("Smart filtering through local db")
+        return self.repo.smart_filter_games(vibe, player_counts, time_pref)
