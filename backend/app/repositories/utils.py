@@ -1,6 +1,7 @@
 from backend.app.config import config as cfg
 
 def calculate_game_score(game: dict, vibe: str | None, mode: str | None, time_pref: str | None) -> float:
+    """Core logic for game filtering and sorting using for /games/filters router."""
     cfg_scoring = cfg.GAME_SCORING_CONFIG
     score = 0.0
 

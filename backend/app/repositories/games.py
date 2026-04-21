@@ -14,7 +14,6 @@ class GamesRepository:
         self.create_table()
 
     def create_table(self):
-        # TODO: separate tables for games by genre or categories to optimize filtering
         with open(cfg.GAME_REPOSITORY_MODEL_PATH) as f:
             sql_content = f.read()
         
