@@ -1,0 +1,461 @@
+/* Popup Styles */
+
+.error-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+}
+
+.error-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+}
+
+.error-popup-content {
+  background:
+    linear-gradient(135deg, rgba(30, 30, 40, 0.95), rgba(20, 20, 30, 0.95)),
+    repeating-linear-gradient(0deg,
+      transparent,
+      transparent 10px,
+      rgba(239, 68, 68, 0.05) 10px,
+      rgba(239, 68, 68, 0.05) 12px),
+    repeating-linear-gradient(90deg,
+      transparent,
+      transparent 10px,
+      rgba(239, 68, 68, 0.05) 10px,
+      rgba(239, 68, 68, 0.05) 12px);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow:
+    0 0 40px rgba(239, 68, 68, 0.3),
+    0 0 80px rgba(239, 68, 68, 0.2);
+  animation:
+    cyberpunkGlow 2s ease-in-out infinite,
+    popupBounce 0.5s ease-out;
+  position: relative;
+  overflow: hidden;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.error-popup-content::before {
+  content: "";
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 300%;
+  background-image:
+    repeating-linear-gradient(0deg,
+      transparent,
+      transparent 10px,
+      rgba(239, 68, 68, 0.1) 10px,
+      rgba(239, 68, 68, 0.1) 12px),
+    repeating-linear-gradient(90deg,
+      transparent,
+      transparent 10px,
+      rgba(239, 68, 68, 0.1) 10px,
+      rgba(239, 68, 68, 0.1) 12px);
+  filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.3));
+  animation: gridScroll 8s linear infinite;
+}
+
+.error-popup-content::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(circle at 20% 30%,
+      rgba(239, 68, 68, 0.1) 0%,
+      transparent 50%),
+    radial-gradient(circle at 80% 70%,
+      rgba(239, 68, 68, 0.1) 0%,
+      transparent 50%),
+    radial-gradient(circle at 50% 50%,
+      rgba(239, 68, 68, 0.05) 0%,
+      transparent 70%);
+  pointer-events: none;
+}
+
+.error-popup-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  animation: iconPulse 1s ease-in-out infinite;
+}
+
+.error-popup-content h3 {
+  color: #ef4444;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  font-weight: 700;
+  text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.error-popup-content p {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 25px;
+  font-size: 1rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.success-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+}
+
+.success-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+}
+
+.success-popup-content {
+  background:
+    linear-gradient(135deg, rgba(20, 40, 30, 0.95), rgba(10, 30, 20, 0.95)),
+    repeating-linear-gradient(0deg,
+      transparent,
+      transparent 10px,
+      rgba(34, 197, 94, 0.05) 10px,
+      rgba(34, 197, 94, 0.05) 12px),
+    repeating-linear-gradient(90deg,
+      transparent,
+      transparent 10px,
+      rgba(34, 197, 94, 0.05) 10px,
+      rgba(34, 197, 94, 0.05) 12px);
+  border: 1px solid rgba(34, 197, 94, 0.5);
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow:
+    0 0 40px rgba(34, 197, 94, 0.3),
+    0 0 80px rgba(34, 197, 94, 0.2);
+  animation:
+    successGlow 2s ease-in-out infinite,
+    popupBounce 0.5s ease-out;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.success-popup-content::before {
+  content: "";
+  position: absolute;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 300%;
+  background-image:
+    repeating-linear-gradient(0deg,
+      transparent,
+      transparent 10px,
+      rgba(34, 197, 94, 0.1) 10px,
+      rgba(34, 197, 94, 0.1) 12px),
+    repeating-linear-gradient(90deg,
+      transparent,
+      transparent 10px,
+      rgba(34, 197, 94, 0.1) 10px,
+      rgba(34, 197, 94, 0.1) 12px);
+  filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.3));
+  animation: gridScroll 8s linear infinite;
+}
+
+.success-popup-content::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(circle at 20% 30%,
+      rgba(34, 197, 94, 0.1) 0%,
+      transparent 50%),
+    radial-gradient(circle at 80% 70%,
+      rgba(34, 197, 94, 0.1) 0%,
+      transparent 50%),
+    radial-gradient(circle at 50% 50%,
+      rgba(34, 197, 94, 0.05) 0%,
+      transparent 70%);
+  pointer-events: none;
+}
+
+.success-popup-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  animation: iconPulse 1s ease-in-out infinite;
+  color: #22c55e;
+  font-weight: bold;
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  line-height: 60px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.2);
+  border: 2px solid #22c55e;
+}
+
+.success-popup-content h3 {
+  color: #22c55e;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  font-weight: 700;
+  text-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.success-popup-content p {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  margin-bottom: 25px;
+  font-size: 1rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.requirements-notification {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  background: linear-gradient(135deg,
+      rgba(0, 240, 255, 0.2),
+      rgba(123, 47, 255, 0.2));
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  color: #fff;
+  padding: 15px 30px;
+  border-radius: 0 0 12px 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family:
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  z-index: 9999;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  transform: translateZ(0);
+}
+
+.loading-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.loading-text {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  animation: pulse 1.5s ease-in-out infinite;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.requirements-notification.hiding {
+  animation: notificationSlideOut 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.requirements-blur {
+  filter: blur(4px);
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.requirements-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(5, 5, 8, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.requirements-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.confirm-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+}
+
+.confirm-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+}
+
+.confirm-popup-content {
+  background:
+    linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(20, 20, 40, 0.95)),
+    repeating-linear-gradient(0deg,
+      transparent,
+      transparent 10px,
+      rgba(59, 130, 246, 0.05) 10px,
+      rgba(59, 130, 246, 0.05) 12px),
+    repeating-linear-gradient(90deg,
+      transparent,
+      transparent 10px,
+      rgba(59, 130, 246, 0.05) 10px,
+      rgba(59, 130, 246, 0.05) 12px);
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow:
+    0 0 40px rgba(59, 130, 246, 0.3),
+    0 0 80px rgba(59, 130, 246, 0.2);
+  animation:
+    cyberpunkGlowBlue 2s ease-in-out infinite,
+    popupBounce 0.5s ease-out;
+  position: relative;
+  overflow: hidden;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.confirm-popup-icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  animation: iconPulse 1s ease-in-out infinite;
+}
+
+.confirm-popup-content h3 {
+  color: #3b82f6;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  font-weight: 700;
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.confirm-popup-content p {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 25px;
+  font-size: 1rem;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.confirm-popup-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.confirm-btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.cancel-btn {
+  background: rgba(100, 100, 100, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(100, 100, 100, 0.3);
+}
+
+.cancel-btn:hover {
+  background: rgba(100, 100, 100, 0.3);
+  color: #fff;
+}
+
+.confirm-ok-btn {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: #fff;
+  border: 1px solid rgba(59, 130, 246, 0.5);
+}
+
+.confirm-ok-btn:hover {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+@keyframes cyberpunkGlowBlue {
+
+  0%,
+  100% {
+    box-shadow:
+      0 0 40px rgba(59, 130, 246, 0.3),
+      0 0 80px rgba(59, 130, 246, 0.2);
+  }
+
+  50% {
+    box-shadow:
+      0 0 50px rgba(59, 130, 246, 0.5),
+      0 0 100px rgba(59, 130, 246, 0.3);
+  }
+}

@@ -1,0 +1,125 @@
+/* Media Queries */
+
+@media (max-width: 768px) {
+  .game-result {
+    grid-template-columns: 1fr;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+  }
+
+  .game-card {
+    max-width: 350px !important;
+    width: 350px !important;
+    margin: 0 auto;
+  }
+
+  .game-banner {
+    height: 180px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  body {
+    padding: 20px 15px;
+  }
+  .container {
+    padding: 30px 20px;
+  }
+  header {
+    margin-bottom: 40px;
+  }
+  header::before {
+    width: 250px;
+    height: 250px;
+  }
+  h1 {
+    font-size: 2.2rem;
+    margin-bottom: 12px;
+  }
+  .subtitle {
+    font-size: 1rem;
+    letter-spacing: 2px;
+  }
+  .language-selector {
+    margin-top: 15px;
+    padding: 4px;
+    gap: 6px;
+  }
+  .lang-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.7rem;
+  }
+  .icon {
+    width: 42px;
+    height: 42px;
+  }
+  .icon svg,
+  .icon img {
+    width: 22px;
+    height: 22px;
+  }
+  h2 {
+    font-size: 1.2rem;
+  }
+  .button-group {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .option-btn {
+    width: 100%;
+    padding: 14px 20px;
+  }
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  .action-btn {
+    width: 100%;
+    max-width: 300px;
+    padding: 14px 28px;
+  }
+}
+
+@media (max-width: 1100px) {
+  #gameResult {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  #gameResult {
+    grid-template-columns: 1fr !important;
+  }
+
+  .steam-input-section {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 10px;
+    justify-items: center;
+  }
+
+  .steam-input-section .steam-mode-btn,
+  .steam-input-section .steam-input,
+  .steam-input-section .steam-fetch-btn {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .steam-input-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .steam-input-section .steam-mode-btn {
+    width: 100%;
+  }
+
+  .steam-input-section .steam-fetch-btn {
+    width: 100%;
+  }
+}
