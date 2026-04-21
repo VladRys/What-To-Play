@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from backend.app.dependencies import get_games_repo, get_logger, get_games_service
-from backend.app.schemas.games import FilteredGamesRequest, FilteredGamesResponse, VibesGamesResponse, GetGameInfoResponse
+from backend.app.schemas.games import FilteredGamesRequest, FilteredGamesResponse, VibesGamesResponse
 from backend.app.exceptions import UnknownVibeException
 from backend.app.services.games_service import GameService
 import random
@@ -90,24 +90,15 @@ def get_games_by_vibe(vibe: str, repo = Depends(get_games_repo), logger = Depend
     
 @router.post("/games/filters", response_model=FilteredGamesResponse)
 def get_games_with_filters(request: FilteredGamesRequest, logger = Depends(get_logger), game_service: GameService = Depends(get_games_service)) -> FilteredGamesResponse:    
-    """Get games based on filters. Can be used to get games from user library or get games based on filters from local database"""
+    """Get games based on filters. Can be used to get games from user library (rn only fully random game) or get ganes based on filters from local database"""
     logger.info(f"Fetching games with filters - Vibe: {request.vibe}, Player counts: {request.player_counts}, Time Perf: {request.time_perf} Is User Library: {request.is_user_library}, User Library Count: {len(request.user_library) if request.user_library else 0}")
-    
-    try:
-        response = game_service.get_smart_filtered_games(request.user_library, request.is_user_library, request.vibe, request.player_counts, request.time_perf)
-        return FilteredGamesResponse(
-            games=response,
-            vibe=request.vibe,
-            player_counts=request.player_counts,
-            time_perf=request.time_perf,
-            is_user_library=request.is_user_library,
-            message="Successfully filtered games",
-            status=200
-        )
-    except Exception as e:
-        logger.error(f"Error getting games with filters: {str(e)}")
-        return FilteredGamesResponse(
-            vibe=request.vibe,
-            message="Error processing filtered games",
-            status=404
-        )
+    response = game_service.get_smart_filtered_games(request.user_library, request.is_user_library, request.vibe, request.player_counts, request.time_perf)
+    return FilteredGamesResponse(
+        games = response,
+        vibe=request.vibe,
+        player_counts=request.player_counts,
+        time_perf=request.time_perf,
+        is_user_library=request.is_user_library,
+        message="Successfully smart filtered games from user library.",
+        status=200
+    )

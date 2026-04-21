@@ -23,4 +23,57 @@ class Config:
             "brain": ("Puzzle", "Strategy", "Simulation")
         }
 
+        self.GAME_SCORING_CONFIG = {
+            "genre_weights": {
+                "Casual": {"chill": 3, "sweat": -1, "brain": 1},
+                "Action": {"chill": -2, "sweat": 3},
+                "Strategy": {"brain": 3, "chill": 1, "sweat": 1},
+                "Adventure": {"chill": 3, "sweat": 1, "brain": 0},
+                "Indie": {"chill": 1.5, "sweat": 1, "brain": 1},
+                "Simulation": {"chill": 3, "sweat": 1, "brain": 1},
+                "RPG": {"chill": 0, "sweat": 3, "brain": 2},
+                "Sports": {"chill": 2, "sweat": 2, "brain": 0},
+                "Racing": {"chill": 2, "sweat": 2, "brain": 0},
+                "Puzzle": {"chill": 0, "sweat": 0, "brain": 3},
+                "Multiplayer": {"chill": -1, "sweat": 3, "brain": 0},
+                "Competitive": {"chill": -2, "sweat": 3, "brain": 0},
+                "FPS": {"chill": -2, "sweat": 3, "brain": 0},
+            },
+            
+            "mode_weights": {
+                "Single-player": {"single": 2},
+                "Multi-player": {"multi": 2, "single": -1},
+                "Co-op": {"coop": 3}
+            },
+            
+            "rating_weight": 3.0
+        }
+
+        self.TIME_PROFILES = {
+            "short": { 
+                "Casual": 2,
+                "Arcade": 2,
+                "Indie": 1,
+                "Puzzle": 1,
+                "Racing": 2,
+                "Sports": 2
+            },
+            "medium": {
+                "Action": 2,
+                "Adventure": 2,
+                "Simulation": 1,
+                "FPS": 3,
+                "Competitive": 3,
+                "Multiplayer": 3
+            },
+            "long": { 
+                "RPG": 3,
+                "Strategy": 2,
+                "Simulation": 3,
+                "FPS": 3,
+                "Competitive": 3,
+                "Multiplayer": 3,
+            }
+        }
+
 config = Config()
