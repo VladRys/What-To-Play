@@ -255,7 +255,7 @@ class GamesRepository:
         self.logger.info(f"Fetched {len(games)} games for vibe '{vibe}': {[g['name'] for g in games]}")
         return games
     
-    def smart_filter_games(self, vibe: str, mode: str | None = None, time_pref: str | None = None, limit: int = 3) -> list[dict]:
+    def smart_filter_games(self, vibe: str | None = None, mode: str | None = None, time_pref: str | None = None, limit: int = 3) -> list[dict]:
         if cfg.VIBE_CHECKING and vibe not in cfg.VIBES_MAP:
             self.logger.error(f"Unknown vibe: {vibe}")
             raise UnknownVibeException

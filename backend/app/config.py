@@ -29,7 +29,7 @@ class Config:
                 "Action": {"chill": -2, "sweat": 3},
                 "Strategy": {"brain": 3, "chill": 1, "sweat": 1},
                 "Adventure": {"chill": 3, "sweat": 1, "brain": 0},
-                "Indie": {"chill": 3, "sweat": 1, "brain": 1},
+                "Indie": {"chill": 1.5, "sweat": 1, "brain": 1},
                 "Simulation": {"chill": 3, "sweat": 1, "brain": 1},
                 "RPG": {"chill": 0, "sweat": 3, "brain": 2},
                 "Sports": {"chill": 2, "sweat": 2, "brain": 0},
