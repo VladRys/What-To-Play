@@ -22,20 +22,16 @@
 .error-popup-content {
   background:
     linear-gradient(135deg, rgba(30, 30, 40, 0.95), rgba(20, 20, 30, 0.95)),
-    repeating-linear-gradient(
-      0deg,
+    repeating-linear-gradient(0deg,
       transparent,
       transparent 10px,
       rgba(239, 68, 68, 0.05) 10px,
-      rgba(239, 68, 68, 0.05) 12px
-    ),
-    repeating-linear-gradient(
-      90deg,
+      rgba(239, 68, 68, 0.05) 12px),
+    repeating-linear-gradient(90deg,
       transparent,
       transparent 10px,
       rgba(239, 68, 68, 0.05) 10px,
-      rgba(239, 68, 68, 0.05) 12px
-    );
+      rgba(239, 68, 68, 0.05) 12px);
   border: 1px solid rgba(239, 68, 68, 0.5);
   border-radius: 16px;
   padding: 40px;
@@ -60,20 +56,16 @@
   width: 100%;
   height: 300%;
   background-image:
-    repeating-linear-gradient(
-      0deg,
+    repeating-linear-gradient(0deg,
       transparent,
       transparent 10px,
       rgba(239, 68, 68, 0.1) 10px,
-      rgba(239, 68, 68, 0.1) 12px
-    ),
-    repeating-linear-gradient(
-      90deg,
+      rgba(239, 68, 68, 0.1) 12px),
+    repeating-linear-gradient(90deg,
       transparent,
       transparent 10px,
       rgba(239, 68, 68, 0.1) 10px,
-      rgba(239, 68, 68, 0.1) 12px
-    );
+      rgba(239, 68, 68, 0.1) 12px);
   filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.3));
   animation: gridScroll 8s linear infinite;
 }
@@ -86,21 +78,15 @@
   width: 100%;
   height: 100%;
   background-image:
-    radial-gradient(
-      circle at 20% 30%,
+    radial-gradient(circle at 20% 30%,
       rgba(239, 68, 68, 0.1) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 80% 70%,
+      transparent 50%),
+    radial-gradient(circle at 80% 70%,
       rgba(239, 68, 68, 0.1) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 50% 50%,
+      transparent 50%),
+    radial-gradient(circle at 50% 50%,
       rgba(239, 68, 68, 0.05) 0%,
-      transparent 70%
-    );
+      transparent 70%);
   pointer-events: none;
 }
 
@@ -148,20 +134,16 @@
 .success-popup-content {
   background:
     linear-gradient(135deg, rgba(20, 40, 30, 0.95), rgba(10, 30, 20, 0.95)),
-    repeating-linear-gradient(
-      0deg,
+    repeating-linear-gradient(0deg,
       transparent,
       transparent 10px,
       rgba(34, 197, 94, 0.05) 10px,
-      rgba(34, 197, 94, 0.05) 12px
-    ),
-    repeating-linear-gradient(
-      90deg,
+      rgba(34, 197, 94, 0.05) 12px),
+    repeating-linear-gradient(90deg,
       transparent,
       transparent 10px,
       rgba(34, 197, 94, 0.05) 10px,
-      rgba(34, 197, 94, 0.05) 12px
-    );
+      rgba(34, 197, 94, 0.05) 12px);
   border: 1px solid rgba(34, 197, 94, 0.5);
   border-radius: 16px;
   padding: 40px;
@@ -186,20 +168,16 @@
   width: 100%;
   height: 300%;
   background-image:
-    repeating-linear-gradient(
-      0deg,
+    repeating-linear-gradient(0deg,
       transparent,
       transparent 10px,
       rgba(34, 197, 94, 0.1) 10px,
-      rgba(34, 197, 94, 0.1) 12px
-    ),
-    repeating-linear-gradient(
-      90deg,
+      rgba(34, 197, 94, 0.1) 12px),
+    repeating-linear-gradient(90deg,
       transparent,
       transparent 10px,
       rgba(34, 197, 94, 0.1) 10px,
-      rgba(34, 197, 94, 0.1) 12px
-    );
+      rgba(34, 197, 94, 0.1) 12px);
   filter: drop-shadow(0 0 6px rgba(34, 197, 94, 0.3));
   animation: gridScroll 8s linear infinite;
 }
@@ -212,21 +190,15 @@
   width: 100%;
   height: 100%;
   background-image:
-    radial-gradient(
-      circle at 20% 30%,
+    radial-gradient(circle at 20% 30%,
       rgba(34, 197, 94, 0.1) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 80% 70%,
+      transparent 50%),
+    radial-gradient(circle at 80% 70%,
       rgba(34, 197, 94, 0.1) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 50% 50%,
+      transparent 50%),
+    radial-gradient(circle at 50% 50%,
       rgba(34, 197, 94, 0.05) 0%,
-      transparent 70%
-    );
+      transparent 70%);
   pointer-events: none;
 }
 
@@ -255,6 +227,7 @@
 }
 
 .success-popup-content p {
+  color: rgba(255, 255, 255, 0.8);
   margin: 0;
   margin-bottom: 25px;
   font-size: 1rem;
@@ -266,11 +239,9 @@
   top: 0;
   left: 50%;
   transform: translateX(-50%) translateY(0);
-  background: linear-gradient(
-    135deg,
-    rgba(0, 240, 255, 0.2),
-    rgba(123, 47, 255, 0.2)
-  );
+  background: linear-gradient(135deg,
+      rgba(0, 240, 255, 0.2),
+      rgba(123, 47, 255, 0.2));
   border: 1px solid rgba(0, 240, 255, 0.4);
   color: #fff;
   padding: 15px 30px;
@@ -322,9 +293,12 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.5;
   }
+
   50% {
     opacity: 1;
   }
@@ -382,20 +356,16 @@
 .confirm-popup-content {
   background:
     linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(20, 20, 40, 0.95)),
-    repeating-linear-gradient(
-      0deg,
+    repeating-linear-gradient(0deg,
       transparent,
       transparent 10px,
       rgba(59, 130, 246, 0.05) 10px,
-      rgba(59, 130, 246, 0.05) 12px
-    ),
-    repeating-linear-gradient(
-      90deg,
+      rgba(59, 130, 246, 0.05) 12px),
+    repeating-linear-gradient(90deg,
       transparent,
       transparent 10px,
       rgba(59, 130, 246, 0.05) 10px,
-      rgba(59, 130, 246, 0.05) 12px
-    );
+      rgba(59, 130, 246, 0.05) 12px);
   border: 1px solid rgba(59, 130, 246, 0.5);
   border-radius: 16px;
   padding: 40px;
@@ -475,11 +445,14 @@
 }
 
 @keyframes cyberpunkGlowBlue {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow:
       0 0 40px rgba(59, 130, 246, 0.3),
       0 0 80px rgba(59, 130, 246, 0.2);
   }
+
   50% {
     box-shadow:
       0 0 50px rgba(59, 130, 246, 0.5),

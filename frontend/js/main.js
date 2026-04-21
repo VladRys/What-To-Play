@@ -4,7 +4,7 @@ import { translations, moodToVibe } from "./config.js";
 import { createParticle } from "./utils.js";
 import { showErrorPopup, showSuccessPopup, resetPopupVisible } from "./ui.js";
 import { displayGames, findGames, dontCare } from "./games.js";
-import { toggleSteamMode, fetchSteamLibrary, clearNickname, steamInputMode } from "./steam.js";
+import { toggleSteamMode, fetchSteamLibrary, clearNickname, steamInputMode, setupSteamInputListener } from "./steam.js";
 
 $(document).ready(function () {
   // Initialize requirements button as disabled
@@ -200,9 +200,9 @@ $(document).ready(function () {
               .html(t.icon)
               .append(
                 " " +
-                  (i < t.curr.length
-                    ? t.curr.substring(0, t.curr.length - i)
-                    : " "),
+                (i < t.curr.length
+                  ? t.curr.substring(0, t.curr.length - i)
+                  : " "),
               ),
           );
           i++;
@@ -380,10 +380,8 @@ $(document).ready(function () {
     toggleSteamMode();
   });
 
-  // Fetch Steam library btn
-  $("#fetchSteamLibrary").on("click", function () {
-    fetchSteamLibrary(currentLang);
-  });
+  // Setup auto-fetch on input change
+  setupSteamInputListener(currentLang);
 
   // Clear Steam nickname btn
   $("#clearNickname").on("click", function () {

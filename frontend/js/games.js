@@ -128,6 +128,7 @@ export function findGames(userState, currentLang) {
 
   // Validate that all filters are selected
   if (!vibe || !duration || !players) {
+    console.log("Validation failed:", { vibe, duration, players, userState });
     resetPopupVisible();
     showErrorPopup(
       translations[currentLang]["select-all-filters"],
@@ -139,12 +140,24 @@ export function findGames(userState, currentLang) {
   // Show loading overlay immediately when search starts
   showLoadingOverlay();
 
+  // Check if user has Steam library loaded
+  const steamLibrary = localStorage.getItem("steamLibrary");
+  const userLibrary = steamLibrary ? JSON.parse(steamLibrary) : [];
+  const isUserLibrary = userLibrary.length > 0;
+
+  console.log("FindGames - Steam library check:", {
+    steamLibraryExists: !!steamLibrary,
+    userLibraryCount: userLibrary.length,
+    isUserLibrary: isUserLibrary
+  });
+
   // Use new /games/filters endpoint with smart filtering system
   const payload = {
     vibe: vibeToSend,
     time_perf: duration,
     player_counts: players,
-    is_user_library: false,
+    is_user_library: isUserLibrary,
+    user_library: userLibrary,
   };
 
   fetch("http://127.0.0.1:8000/games/filters", {

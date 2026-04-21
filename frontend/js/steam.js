@@ -12,6 +12,28 @@ import { translations } from "./config.js";
 // Input mode for Steam: "id" for 17-digit Steam ID, "nickname" for vanity URL
 export let steamInputMode = "nickname"; // Default to nickname mode
 
+export function setupSteamInputListener(currentLang) {
+  // Show checkmark when user types something
+  $("#steamNickname").off("input").on("input", function () {
+    const inputValue = $(this).val().trim();
+    const $checkmark = $("#steamCheckmark");
+
+    if (inputValue) {
+      $checkmark.addClass("visible");
+    } else {
+      $checkmark.removeClass("visible");
+    }
+  });
+
+  // Fetch library when checkmark is clicked
+  $("#steamCheckmark").off("click").on("click", function () {
+    const inputValue = $("#steamNickname").val().trim();
+    if (inputValue) {
+      fetchSteamLibrary(currentLang);
+    }
+  });
+}
+
 export function toggleSteamMode() {
   // Toggle between Steam ID and nickname input modes
   // Updates button text and input placeholder accordingly
@@ -105,13 +127,18 @@ export function fetchSteamLibrary(currentLang) {
       localStorage.setItem("steamLibraryAppids", JSON.stringify(appids));
       localStorage.setItem("steamLibrary", JSON.stringify(games));
 
-      // Call /games/filters endpoint to pre-filter games from user's library
+      // Call /games/filters endpoint with POST to pre-filter games from user's library
       // This prepares the backend to filter recommendations based on owned games
-      const params = new URLSearchParams();
-      params.append("is_user_library", "true");
-      params.append("user_library", JSON.stringify(games));
-
-      fetch(`http://127.0.0.1:8000/games/filters?${params.toString()}`)
+      fetch("http://127.0.0.1:8000/games/filters", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          is_user_library: true,
+          user_library: games
+        })
+      })
         .then((r) => r.json())
         .then((filterData) => {
           console.log("Filter response:", filterData);
@@ -157,6 +184,11 @@ export function clearNickname(currentLang) {
     currentLang,
     () => {
       $("#steamNickname").val("");
+      $("#steamCheckmark").removeClass("visible");
+      // Also clear Steam library from localStorage
+      localStorage.removeItem("steamLibrary");
+      localStorage.removeItem("steamLibraryAppids");
+      console.log("Cleared Steam library from localStorage");
     }
   );
 }
