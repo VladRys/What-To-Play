@@ -1,16 +1,12 @@
-// Game-related functionality
-
 import { moodToVibe, translations, timeToDuration } from "./config.js";
 import { showErrorPopup, showSuccessPopup, resetPopupVisible, showLoadingOverlay, hideLoadingOverlay } from "./ui.js";
 
 export function displayGames(games, duration = null) {
-  // Load previously seen games from localStorage to avoid duplicates
   const seenGames = new Set(
     localStorage.getItem("seenGames")?.split(",") || [],
   );
   const $gameResult = $("#gameResult").empty().show();
 
-  // Define genre filters based on time duration
   const timeGenres = {
     short: ["casual", "arcade", "indie", "puzzle", "racing", "sports"],
     medium: ["action", "adventure", "simulation", "fps", "competitive", "multiplayer"],
@@ -22,20 +18,17 @@ export function displayGames(games, duration = null) {
     const genres = game.genres || "Unknown Genre";
     const genresList = typeof genres === "string" ? genres.split(",") : genres;
 
-    // Filter genres based on time duration if selected
     let filteredGenres = genresList;
     if (duration && timeGenres[duration]) {
       const relevantGenres = timeGenres[duration];
       filteredGenres = genresList.filter(genre =>
         relevantGenres.some(rg => genre.toLowerCase().includes(rg))
       );
-      // If no relevant genres found, show all genres (fallback)
       if (filteredGenres.length === 0) {
         filteredGenres = genresList;
       }
     }
 
-    // Limit to 3 genres
     const limitedGenres = filteredGenres.slice(0, 3).join(", ");
     const categories = game.categories || "";
     const isMultiplayer = categories.toLowerCase().includes("multi-player");
@@ -61,7 +54,6 @@ export function displayGames(games, duration = null) {
     $gameResult.append($card);
     seenGames.add(game.appid);
 
-    // Animate card appearance with staggered delay (each card appears 150ms after the previous)
     setTimeout(
       () => {
         $card.css({
@@ -75,7 +67,6 @@ export function displayGames(games, duration = null) {
     );
   });
 
-  // Adjust container width based on number of games (only for 1 or 2 games)
   const gameCount = games.length;
   if (gameCount === 1) {
     $gameResult.css({
@@ -88,45 +79,34 @@ export function displayGames(games, duration = null) {
       "place-items": "center",
     });
   } else {
-    // For 3 games, reset to original settings
     $gameResult.css({
       "max-width": "",
       "place-items": "",
     });
   }
 
-  // Save seen games to localStorage to remember them for future requests
   localStorage.setItem("seenGames", Array.from(seenGames).join(","));
 
-  // Hide loading overlay after all card animations complete
-  // Calculate max delay: 50ms initial + 150ms per card + 500ms animation duration
   const maxDelay = 50 + games.length * 150;
   setTimeout(() => {
     hideLoadingOverlay();
   }, maxDelay + 500);
 
-  // Enable requirements button when games are displayed
   $("#checkRequirements")
     .prop("disabled", false)
     .css({ opacity: 1, cursor: "pointer" });
 }
 
 export function findGames(userState, currentLang) {
-  // Convert mood text to vibe parameter (chill/sweat/brain)
   const vibe = userState.mood ? moodToVibe[userState.mood] : null;
 
-  // Map UI values to backend filter values
   const duration = userState.time ? timeToDuration[userState.time] : null;
-  // Backend expects "single" or "multi" for player_counts, not "Single-player" or "Multi-player"
   const players = userState.single !== null && userState.single !== undefined
     ? (userState.single ? "single" : "multi")
     : null;
 
-  // If vibe is not selected but time or mode is selected, use a default vibe
-  // Backend requires vibe to work, so we use "chill" as a neutral default
   const vibeToSend = vibe || (duration || players ? "chill" : null);
 
-  // Validate that all filters are selected
   if (!vibe || !duration || !players) {
     console.log("Validation failed:", { vibe, duration, players, userState });
     resetPopupVisible();
@@ -137,10 +117,8 @@ export function findGames(userState, currentLang) {
     return;
   }
 
-  // Show loading overlay immediately when search starts
   showLoadingOverlay();
 
-  // Check if user has Steam library loaded
   const steamLibrary = localStorage.getItem("steamLibrary");
   const userLibrary = steamLibrary ? JSON.parse(steamLibrary) : [];
   const isUserLibrary = userLibrary.length > 0;
@@ -151,7 +129,6 @@ export function findGames(userState, currentLang) {
     isUserLibrary: isUserLibrary
   });
 
-  // Use new /games/filters endpoint with smart filtering system
   const payload = {
     vibe: vibeToSend,
     time_perf: duration,
@@ -188,20 +165,15 @@ export function findGames(userState, currentLang) {
         return;
       }
 
-      // Apply hard filtering on frontend based on mode only
-      // Backend uses scoring system for time, which works better than strict genre filtering
       let filteredGames = games;
 
-      // Filter by mode
       if (players) {
         if (players === "single") {
-          // Filter out games with Multi-player in categories
           filteredGames = games.filter(game => {
             const categories = (game.categories || "").toLowerCase();
             return !categories.includes("multi-player");
           });
         } else if (players === "multi") {
-          // Filter out games with Single-player in categories
           filteredGames = games.filter(game => {
             const categories = (game.categories || "").toLowerCase();
             return categories.includes("multi-player") || !categories.includes("single-player");
@@ -216,7 +188,6 @@ export function findGames(userState, currentLang) {
         return;
       }
 
-      // Take up to 3 games from filtered results
       const gamesToShow = filteredGames.slice(0, 3);
 
       displayGames(gamesToShow, duration);
@@ -229,12 +200,9 @@ export function findGames(userState, currentLang) {
     });
 }
 
-
 export function dontCare(currentLang) {
-  // Show loading overlay when fetching random game
   showLoadingOverlay();
 
-  // Check if user has Steam library loaded
   const steamLibrary = localStorage.getItem("steamLibrary");
   const userLibrary = steamLibrary ? JSON.parse(steamLibrary) : [];
   const hasLibrary = userLibrary.length > 0;
@@ -244,9 +212,7 @@ export function dontCare(currentLang) {
     libraryCount: userLibrary.length
   });
 
-  // Fetch random game - from user library if available, otherwise from database
   if (hasLibrary) {
-    // Use new /random/library endpoint for user's Steam library
     fetch("http://127.0.0.1:8000/random/library", {
       method: "POST",
       headers: {
@@ -286,7 +252,6 @@ export function dontCare(currentLang) {
 
         $("#gameResult").html(gameCard);
 
-        // Animate card appearance
         setTimeout(() => {
           $(".game-card").css({
             opacity: 1,
@@ -295,7 +260,6 @@ export function dontCare(currentLang) {
           });
         }, 50);
 
-        // Hide loading overlay after animation completes
         setTimeout(() => {
           hideLoadingOverlay();
         }, 650);
@@ -307,14 +271,12 @@ export function dontCare(currentLang) {
         showErrorPopup(translations[currentLang]["server-error"], currentLang);
       });
   } else {
-    // Use old /random endpoint for database games
     fetch("http://127.0.0.1:8000/random")
       .then((r) => r.json())
       .then((data) => {
         const game = data.game || {};
         const Image = data.header_image || "img/testimg.png";
         const genres = game.genres || "Unknown Genre";
-        // Limit genres to 3 for cleaner display
         const genresList = typeof genres === "string" ? genres.split(",") : genres;
         const limitedGenres = genresList.slice(0, 3).join(", ");
         const categories = game.categories || "";
@@ -338,7 +300,6 @@ export function dontCare(currentLang) {
         const $card = $(gameCard);
         $("#gameResult").html($card).show();
 
-        // Animate card appearance (single card, no stagger needed)
         setTimeout(() => {
           $card.css({
             opacity: 1,
@@ -348,8 +309,6 @@ export function dontCare(currentLang) {
           });
         }, 50);
 
-        // Hide loading overlay after animation completes
-        // 50ms initial delay + 500ms animation duration + 100ms buffer
         setTimeout(() => {
           hideLoadingOverlay();
         }, 650);

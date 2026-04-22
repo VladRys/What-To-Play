@@ -1,13 +1,8 @@
-// UI functions - popups and overlays
-
 import { translations } from "./config.js";
 
-// Flag to prevent multiple popups from showing simultaneously
 let popupVisible = false;
 
 export function showErrorPopup(message, currentLang = "en") {
-  // Display error popup with overlay
-  // Returns early if another popup is already visible to prevent overlap
   console.log("showErrorPopup called, popupVisible:", popupVisible, "message:", message);
   if (popupVisible) return;
   popupVisible = true;
@@ -27,7 +22,6 @@ export function showErrorPopup(message, currentLang = "en") {
   $("html").append(popup);
 
   overlay.hide().fadeIn(300);
-  // Animate popup entrance with slide-up and fade-in effect
   popup.css({ opacity: 0, transform: "translate(-50%, -40%)" }).show().animate(
     {
       opacity: 1,
@@ -36,7 +30,6 @@ export function showErrorPopup(message, currentLang = "en") {
     300,
   );
 
-  // Auto-hide popup after 1.2 seconds
   setTimeout(() => {
     popup.animate(
       {
@@ -56,8 +49,6 @@ export function showErrorPopup(message, currentLang = "en") {
 }
 
 export function showSuccessPopup(message) {
-  // Display success popup with overlay
-  // Returns early if another popup is already visible to prevent overlap
   if (popupVisible) return;
   popupVisible = true;
 
@@ -76,7 +67,6 @@ export function showSuccessPopup(message) {
   $("html").append(popup);
 
   overlay.hide().fadeIn(300);
-  // Animate popup entrance with fade-in effect only
   popup.css({ opacity: 0, transform: "translate(-50%, -50%)" }).show().animate(
     {
       opacity: 1,
@@ -84,7 +74,6 @@ export function showSuccessPopup(message) {
     300,
   );
 
-  // Auto-hide popup after 1.2 seconds
   setTimeout(() => {
     popup.animate(
       {
@@ -103,19 +92,14 @@ export function showSuccessPopup(message) {
 }
 
 export function resetPopupVisible() {
-  // Reset popup visibility flag to allow new popups to show
-  // Used when we want to force a popup to appear even if one was recently shown
   popupVisible = false;
 }
 
 export function getPopupVisible() {
-  // Check if a popup is currently visible
   return popupVisible;
 }
 
 export function showLoadingOverlay() {
-  // Show the loading overlay with blur effect and centered text
-  // Used during game fetching to provide visual feedback
   const overlay = $("#loadingOverlay");
   if (overlay.length) {
     overlay.addClass("active");
@@ -123,8 +107,6 @@ export function showLoadingOverlay() {
 }
 
 export function hideLoadingOverlay() {
-  // Hide the loading overlay
-  // Called after game cards finish animating or on error
   const overlay = $("#loadingOverlay");
   if (overlay.length) {
     overlay.removeClass("active");
@@ -132,8 +114,6 @@ export function hideLoadingOverlay() {
 }
 
 export function showConfirmPopup(message, currentLang = "en", onConfirm) {
-  // Display confirmation popup with OK/Cancel buttons
-  // Returns early if another popup is already visible to prevent overlap
   if (popupVisible) return;
   popupVisible = true;
 
@@ -163,8 +143,7 @@ export function showConfirmPopup(message, currentLang = "en", onConfirm) {
     300,
   );
 
-  // Handle button clicks
-  popup.find(".cancel-btn").on("click", function() {
+  popup.find(".cancel-btn").on("click", function () {
     popup.animate(
       {
         opacity: 0,
@@ -180,7 +159,7 @@ export function showConfirmPopup(message, currentLang = "en", onConfirm) {
     );
   });
 
-  popup.find(".confirm-ok-btn").on("click", function() {
+  popup.find(".confirm-ok-btn").on("click", function () {
     popup.animate(
       {
         opacity: 0,
