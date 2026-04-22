@@ -165,30 +165,7 @@ export function findGames(userState, currentLang) {
         return;
       }
 
-      let filteredGames = games;
-
-      if (players) {
-        if (players === "single") {
-          filteredGames = games.filter(game => {
-            const categories = (game.categories || "").toLowerCase();
-            return !categories.includes("multi-player");
-          });
-        } else if (players === "multi") {
-          filteredGames = games.filter(game => {
-            const categories = (game.categories || "").toLowerCase();
-            return categories.includes("multi-player") || !categories.includes("single-player");
-          });
-        }
-      }
-
-      if (filteredGames.length === 0) {
-        hideLoadingOverlay();
-        resetPopupVisible();
-        showErrorPopup("No games found matching your criteria", currentLang);
-        return;
-      }
-
-      const gamesToShow = filteredGames.slice(0, 3);
+      const gamesToShow = games.slice(0, 3);
 
       displayGames(gamesToShow, duration);
     })
