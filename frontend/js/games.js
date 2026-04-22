@@ -37,7 +37,7 @@ export function displayGames(games, duration = null) {
       <div class="game-card" style="opacity: 0; transform: translateY(30px); filter: blur(10px);" data-appid="${game.appid}" data-game-name="${game.name || "Unknown Game"}">
         <div class="glow"></div>
         <div class="game-banner">
-          <img src="${Image}" alt="Game Banner">
+          <img src="${Image}" alt="Game Banner" onerror="this.onerror=null; this.src='img/ded.png'">
         </div>
         <div class="game-info">
           <h3 class="game-title">${game.name || "Unknown Game"}</h3>
@@ -213,7 +213,7 @@ export function dontCare(currentLang) {
           <div class="game-card" style="opacity: 0; transform: translateY(30px); filter: blur(10px);" data-appid="${game.appid}" data-game-name="${game.name || "Unknown Game"}">
             <div class="glow"></div>
             <div class="game-banner">
-              <img src="${Image}" alt="Game Banner">
+              <img src="${Image}" alt="Game Banner" onerror="this.onerror=null; this.src='img/ded.png'">
             </div>
             <div class="game-info">
               <h3 class="game-title">${game.name || "Unknown Game"}</h3>
@@ -262,7 +262,7 @@ export function dontCare(currentLang) {
           <div class="game-card" style="opacity: 0; transform: translateY(30px); filter: blur(10px);" data-appid="${game.appid}" data-game-name="${game.name || "Unknown Game"}">
             <div class="glow"></div>
             <div class="game-banner">
-              <img src="${Image}" alt="Game Banner">
+              <img src="${Image}" alt="Game Banner" onerror="this.onerror=null; this.src='img/ded.png'">
             </div>
             <div class="game-info">
               <h3 class="game-title">${game.name || "Unknown Game"}</h3>
