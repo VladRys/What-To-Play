@@ -126,7 +126,8 @@ class GameService:
             
             result = []
             for item in items:
-                result.append(self.get_game_info_by_id(item['appid']))
+                if not isinstance(item, list):
+                    result.append(self.get_game_info_by_id(item['appid']))
 
             return result            
 
