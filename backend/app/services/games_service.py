@@ -25,7 +25,16 @@ class GameService:
             "header_image": f"https://cdn.akamai.steamstatic.com/steam/apps/{game['appid']}/header.jpg",
             "status": 200
             }
+    
+    def get_random_game_from_library(self, user_library: list[UserLibraryGame]) -> dict | None:
+        game = random.choice(user_library).model_dump()
+        enhanced_game = self.get_game_info_by_id(game["appid"])
         
+        if isinstance(enhanced_game, GameFetched):
+            return enhanced_game.model_dump()
+        
+        return
+    
     def get_game_info_by_id(self, app_id: int) -> GameFetched | list:
         """Fetch details for a given app ID using Steam API"""
         url = f"https://store.steampowered.com/api/appdetails?appids={app_id}"

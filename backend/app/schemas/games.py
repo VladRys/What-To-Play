@@ -45,3 +45,7 @@ class GetGameInfoResponse(BaseModel):
     data: GameFetched | list[GameFetched] | list = []
     message: str
     status: int
+    
+class UserLibraryRequest(BaseModel):
+    user_library: list[UserLibraryGame]
+    
