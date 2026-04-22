@@ -172,15 +172,28 @@ export function fetchSteamLibrary(currentLang) {
 export function clearNickname(currentLang) {
   // Clear the Steam nickname field with user confirmation
   const inputValue = $("#steamNickname").val().trim();
+  const hasLibrary = localStorage.getItem("steamLibrary");
 
-  // Only show confirmation if there's actually something to clear
-  if (!inputValue) {
+  // Show confirmation if input has value OR if library exists in localStorage
+  if (!inputValue && !hasLibrary) {
     return;
+  }
+
+  // Determine appropriate confirmation message based on what's being cleared
+  let confirmMessage;
+  if (inputValue && hasLibrary) {
+    confirmMessage = translations[currentLang]["confirm-clear-nickname-both"];
+  } else if (!inputValue && hasLibrary) {
+    confirmMessage = translations[currentLang]["confirm-clear-nickname-with-library"];
+  } else if (inputValue && !hasLibrary) {
+    confirmMessage = translations[currentLang]["confirm-clear-nickname-with-nickname"];
+  } else {
+    confirmMessage = translations[currentLang]["confirm-clear-nickname"];
   }
 
   // Show custom confirmation popup
   showConfirmPopup(
-    translations[currentLang]["confirm-clear-nickname"],
+    confirmMessage,
     currentLang,
     () => {
       $("#steamNickname").val("");

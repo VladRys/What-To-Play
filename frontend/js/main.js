@@ -416,6 +416,11 @@ $(document).ready(function () {
         '<div class="requirements-notification">' + notificationText + "</div>",
       );
 
+      // Trigger smooth slide-in animation
+      setTimeout(() => {
+        $(".requirements-notification").addClass("show");
+      }, 10);
+
       // Activate blur overlay and elevate game cards with slight scale effect
       $(".requirements-overlay").addClass("active");
       $("#gameResult").addClass("elevated");

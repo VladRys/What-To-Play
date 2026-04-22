@@ -234,57 +234,130 @@ export function dontCare(currentLang) {
   // Show loading overlay when fetching random game
   showLoadingOverlay();
 
-  // Fetch a completely random game from the database (no filters applied)
-  fetch("http://127.0.0.1:8000/random")
-    .then((r) => r.json())
-    .then((data) => {
-      const game = data.game || {};
-      const Image = data.header_image || "img/testimg.png";
-      const genres = game.genres || "Unknown Genre";
-      // Limit genres to 3 for cleaner display
-      const genresList = typeof genres === "string" ? genres.split(",") : genres;
-      const limitedGenres = genresList.slice(0, 3).join(", ");
-      const categories = game.categories || "";
-      const isMultiplayer = categories.toLowerCase().includes("multi-player");
-      const gameCard = `
-        <div class="game-card" style="opacity: 0; transform: translateY(30px); filter: blur(10px);" data-appid="${game.appid}" data-game-name="${game.name || "Unknown Game"}">
-          <div class="glow"></div>
-          <div class="game-banner">
-            <img src="${Image}" alt="Game Banner">
+  // Check if user has Steam library loaded
+  const steamLibrary = localStorage.getItem("steamLibrary");
+  const userLibrary = steamLibrary ? JSON.parse(steamLibrary) : [];
+  const hasLibrary = userLibrary.length > 0;
+
+  console.log("DontCare - Steam library check:", {
+    hasLibrary: hasLibrary,
+    libraryCount: userLibrary.length
+  });
+
+  // Fetch random game - from user library if available, otherwise from database
+  if (hasLibrary) {
+    // Use new /random/library endpoint for user's Steam library
+    fetch("http://127.0.0.1:8000/random/library", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user_library: userLibrary
+      })
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        const game = data || {};
+        const Image = game.header_image || `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`;
+        const genres = game.genres || "Unknown Genre";
+        // Limit genres to 3 for cleaner display
+        const genresList = typeof genres === "string" ? genres.split(",") : genres;
+        const limitedGenres = genresList.slice(0, 3).join(", ");
+        const categories = game.categories || "";
+        const isMultiplayer = categories.toLowerCase().includes("multi-player");
+        const gameCard = `
+          <div class="game-card" style="opacity: 0; transform: translateY(30px); filter: blur(10px);" data-appid="${game.appid}" data-game-name="${game.name || "Unknown Game"}">
+            <div class="glow"></div>
+            <div class="game-banner">
+              <img src="${Image}" alt="Game Banner">
+            </div>
+            <div class="game-info">
+              <h3 class="game-title">${game.name || "Unknown Game"}</h3>
+              <p class="game-genre">${limitedGenres}</p>
+              <div class="game-meta">
+                <span class="game-time">${game.is_free ? "Free to Play" : "Paid"}</span>
+                <span class="game-difficulty">${(game.positive || 0) > (game.negative || 0) ? "Positive Reviews" : "Mixed Reviews"}</span>
+                ${isMultiplayer ? '<span class="game-friends">With Friends</span>' : ""}
+              </div>
+            </div>
           </div>
-          <div class="game-info">
-            <h3 class="game-title">${game.name || "Unknown Game"}</h3>
-            <p class="game-genre">${limitedGenres}</p>
-            <div class="game-meta">
-              <span class="game-time">${game.is_free ? "Free to Play" : "Paid"}</span>
+        `;
+
+        $("#gameResult").html(gameCard);
+
+        // Animate card appearance
+        setTimeout(() => {
+          $(".game-card").css({
+            opacity: 1,
+            transform: "translateY(0)",
+            filter: "blur(0)"
+          });
+        }, 50);
+
+        // Hide loading overlay after animation completes
+        setTimeout(() => {
+          hideLoadingOverlay();
+        }, 650);
+      })
+      .catch((error) => {
+        console.error("Error fetching random game from library:", error);
+        hideLoadingOverlay();
+        resetPopupVisible();
+        showErrorPopup(translations[currentLang]["server-error"], currentLang);
+      });
+  } else {
+    // Use old /random endpoint for database games
+    fetch("http://127.0.0.1:8000/random")
+      .then((r) => r.json())
+      .then((data) => {
+        const game = data.game || {};
+        const Image = data.header_image || "img/testimg.png";
+        const genres = game.genres || "Unknown Genre";
+        // Limit genres to 3 for cleaner display
+        const genresList = typeof genres === "string" ? genres.split(",") : genres;
+        const limitedGenres = genresList.slice(0, 3).join(", ");
+        const categories = game.categories || "";
+        const isMultiplayer = categories.toLowerCase().includes("multi-player");
+        const gameCard = `
+          <div class="game-card" style="opacity: 0; transform: translateY(30px); filter: blur(10px);" data-appid="${game.appid}" data-game-name="${game.name || "Unknown Game"}">
+            <div class="glow"></div>
+            <div class="game-banner">
+              <img src="${Image}" alt="Game Banner">
+            </div>
+            <div class="game-info">
+              <h3 class="game-title">${game.name || "Unknown Game"}</h3>
+              <p class="game-genre">${limitedGenres}</p>
+              <div class="game-meta">
+                <span class="game-time">${game.is_free ? "Free to Play" : "Paid"}</span>
               <span class="game-difficulty">${game.positive || 0 > game.negative || 0 ? "Positive Reviews" : "Mixed Reviews"}</span>
               ${isMultiplayer ? '<span class="game-friends">With Friends</span>' : ""}
             </div>
           </div>
-        </div>
-      `;
-      const $card = $(gameCard);
-      $("#gameResult").html($card).show();
+        `;
+        const $card = $(gameCard);
+        $("#gameResult").html($card).show();
 
-      // Animate card appearance (single card, no stagger needed)
-      setTimeout(() => {
-        $card.css({
-          opacity: 1,
-          transform: "translateY(0)",
-          filter: "blur(0px)",
-          transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
-        });
-      }, 50);
+        // Animate card appearance (single card, no stagger needed)
+        setTimeout(() => {
+          $card.css({
+            opacity: 1,
+            transform: "translateY(0)",
+            filter: "blur(0px)",
+            transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
+          });
+        }, 50);
 
-      // Hide loading overlay after animation completes
-      // 50ms initial delay + 500ms animation duration
-      setTimeout(() => {
+        // Hide loading overlay after animation completes
+        // 50ms initial delay + 500ms animation duration + 100ms buffer
+        setTimeout(() => {
+          hideLoadingOverlay();
+        }, 650);
+      })
+      .catch((error) => {
         hideLoadingOverlay();
-      }, 550);
-    })
-    .catch((error) => {
-      hideLoadingOverlay();
-      resetPopupVisible();
-      showErrorPopup(translations[currentLang]["server-error"], currentLang);
-    });
+        resetPopupVisible();
+        showErrorPopup(translations[currentLang]["server-error"], currentLang);
+      });
+  }
 }

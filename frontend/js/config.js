@@ -27,6 +27,9 @@ export const translations = {
     "select-all-filters": "Please select all filters (Mood, Time, and Mode) for best results",
     "clear-nickname": "Clear",
     "confirm-clear-nickname": "Are you sure you want to clear the Steam nickname?",
+    "confirm-clear-nickname-with-library": "Are you sure you want to clear the Steam library? (No nickname in field)",
+    "confirm-clear-nickname-with-nickname": "Are you sure you want to clear the Steam nickname? (No library stored)",
+    "confirm-clear-nickname-both": "Are you sure you want to clear the Steam nickname and library?",
   },
   ru: {
     subtitle: "Во что поиграть сегодня",
@@ -54,6 +57,9 @@ export const translations = {
     "select-all-filters": "Пожалуйста, выберите все фильтры (Вайб, Время и Режим) для лучших результатов",
     "clear-nickname": "Очистить",
     "confirm-clear-nickname": "Вы уверены, что хотите очистить никнейм Steam?",
+    "confirm-clear-nickname-with-library": "Вы уверены, что хотите очистить библиотеку Steam? (Никнейм не введён)",
+    "confirm-clear-nickname-with-nickname": "Вы уверены, что хотите очистить никнейм Steam? (Библиотека не сохранена)",
+    "confirm-clear-nickname-both": "Вы уверены, что хотите очистить никнейм и библиотеку Steam?",
   },
   uk: {
     subtitle: "У Що Пограти Сьогодні",
@@ -81,6 +87,9 @@ export const translations = {
     "select-all-filters": "Будь ласка, виберіть всі фільтри (Настрій, Час і Режим) для найкращих результатів",
     "clear-nickname": "Очистити",
     "confirm-clear-nickname": "Ви впевнені, що хочете очистити нікнейм Steam?",
+    "confirm-clear-nickname-with-library": "Ви впевнені, що хочете очистити бібліотеку Steam? (Нікнейм не введено)",
+    "confirm-clear-nickname-with-nickname": "Ви впевнені, що хочете очистити нікнейм Steam? (Бібліотека не збережена)",
+    "confirm-clear-nickname-both": "Ви впевнені, що хочете очистити нікнейм і бібліотеку Steam?",
   },
 };
 
