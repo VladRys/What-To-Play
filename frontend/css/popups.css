@@ -491,18 +491,16 @@
 }
 
 .faq-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: rgba(255, 255, 255, 0.6);
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 0.9rem;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
+  margin-top: 15px;
 }
 
 .faq-btn:hover {
