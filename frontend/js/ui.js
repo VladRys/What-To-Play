@@ -106,10 +106,20 @@ export function showLoadingOverlay() {
   }
 }
 
+export function showLoadingOverlayWithText(text) {
+  const overlay = $("#loadingOverlay");
+  const loadingText = $("#loadingText");
+  if (overlay.length) {
+    loadingText.text(text);
+    overlay.addClass("active");
+  }
+}
+
 export function hideLoadingOverlay() {
   const overlay = $("#loadingOverlay");
   if (overlay.length) {
     overlay.removeClass("active");
+    $("#loadingText").text("Loading...");
   }
 }
 

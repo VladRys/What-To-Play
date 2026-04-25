@@ -4,6 +4,8 @@ import {
   resetPopupVisible,
   getPopupVisible,
   showConfirmPopup,
+  showLoadingOverlayWithText,
+  hideLoadingOverlay,
 } from "./ui.js";
 import { translations } from "./config.js";
 
@@ -75,15 +77,18 @@ export function fetchSteamLibrary(currentLang) {
       '<span class="icon-wrapper"><iconify-icon icon="fa-solid:spinner" class="fa-spin"></iconify-icon></span>Loading...',
     );
 
+  showLoadingOverlayWithText("Fetching library, stand by...");
+
   const url =
     actualInputType === "id"
       ? `http://127.0.0.1:8000/owned-games/id/${inputValue}`
-      : `http://127.0.0.1:8000/owned-games/vanity/${inputValue}`;
+      : `http://127.0.0.1:8000/owned-games/enriched/vanity/${inputValue}`;
 
   fetch(url)
     .then((r) => r.json())
     .then((data) => {
       $btn.prop("disabled", false).html(originalText);
+      hideLoadingOverlay();
 
       if (data.error || data.status === 404) {
         showErrorPopup(
@@ -100,37 +105,15 @@ export function fetchSteamLibrary(currentLang) {
       localStorage.setItem("steamLibraryAppids", JSON.stringify(appids));
       localStorage.setItem("steamLibrary", JSON.stringify(games));
 
-      fetch("http://127.0.0.1:8000/games/filters", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          is_user_library: true,
-          user_library: games
-        })
-      })
-        .then((r) => r.json())
-        .then((filterData) => {
-          console.log("Filter response:", filterData);
-
-          resetPopupVisible();
-          showSuccessPopup(
-            `Successfully fetched ${games.length} games from library`,
-          );
-        })
-        .catch((error) => {
-          console.error("Error calling filters endpoint:", error);
-
-          resetPopupVisible();
-          showSuccessPopup(
-            `Successfully fetched ${games.length} games from library`,
-          );
-        });
+      resetPopupVisible();
+      showSuccessPopup(
+        `Successfully fetched ${games.length} games from library`,
+      );
     })
     .catch((error) => {
       console.error("Error fetching Steam library:", error);
       $btn.prop("disabled", false).html(originalText);
+      hideLoadingOverlay();
       showErrorPopup(translations[currentLang]["server-error"], currentLang);
     });
 }

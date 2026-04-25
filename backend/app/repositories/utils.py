@@ -8,6 +8,15 @@ def calculate_game_score(game: dict, vibe: str | None, mode: str | None, time_pr
     genres = set(g.strip() for g in (game.get("genres") or "").split(","))
     categories = set(c.strip() for c in (game.get("categories") or "").split(","))
 
+    # --- HARD MODE FILTERING ---
+    if mode:
+        if mode == "single":
+            if "Multi-player" in categories:
+                return -9999
+        elif mode == "multi":
+            if "Multi-player" not in categories:
+                return -9999
+
     # --- GENRE ---
     for genre in genres:
         score += cfg_scoring["genre_weights"].get(genre, {}).get(vibe, 0)

@@ -104,32 +104,41 @@ class GameService:
             self.logger.warning(f"Error fetching reviews for app {appid}: {str(e)}")
             return (0, 0)
         
-    def get_smart_filtered_games(self, user_libary: list[UserLibraryGame] | list, is_user_library: bool = False, vibe: str | None = None, player_counts: str | None = None, time_pref: str | None = None):
+    def get_smart_filtered_games(self, user_libary: list[UserLibraryGame] | list, is_user_library: bool = False, vibe: str | None = None, player_counts: str | None = None, time_pref: str | None = None, seen_games: list[str] = []):
         if cfg.VIBE_CHECKING and vibe not in cfg.VIBES_MAP:
             self.logger.error(f"Unknown vibe: {vibe}")
             raise UnknownVibeException
-        
+
         if is_user_library and user_libary:
             games = []
             for game in user_libary:
                 dumped_game = game.model_dump()
+
+                # Games are already enriched during library fetch, no need to enrich again
                 score = calculate_game_score(dumped_game, vibe, player_counts, time_pref)
                 dumped_game["score"] = score
                 games.append(dumped_game)
 
             games.sort(key=lambda x: x["score"], reverse=True)
 
+            # Filter out games with score -9999 (hard filtered)
+            valid_games = [g for g in games if g["score"] > -9999]
+
+            if len(valid_games) == 0:
+                self.logger.warning("No games passed hard filtering, returning top games anyway")
+                valid_games = games[:10]
+
             TOP_K = 150
-            top_games = games[:TOP_K]
+            top_games = valid_games[:TOP_K]
 
             items = random.sample(top_games, min(3, len(top_games)))
-            
+
             result = []
             for item in items:
                 if not isinstance(item, list):
                     result.append(self.get_game_info_by_id(item['appid']))
 
-            return result            
+            return result
 
 
         self.logger.info("Smart filtering through local db")

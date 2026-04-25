@@ -129,12 +129,15 @@ export function findGames(userState, currentLang) {
     isUserLibrary: isUserLibrary
   });
 
+  const seenGames = localStorage.getItem("seenGames")?.split(",") || [];
+
   const payload = {
     vibe: vibeToSend,
     time_perf: duration,
     player_counts: players,
     is_user_library: isUserLibrary,
     user_library: userLibrary,
+    seen_games: seenGames
   };
 
   fetch("http://127.0.0.1:8000/games/filters", {
