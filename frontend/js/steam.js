@@ -81,8 +81,8 @@ export function fetchSteamLibrary(currentLang) {
 
   const url =
     actualInputType === "id"
-      ? `http://127.0.0.1:8000/owned-games/enriched/id/${inputValue}`
-      : `http://127.0.0.1:8000/owned-games/enriched/vanity/${inputValue}`;
+      ? `/owned-games/enriched/id/${inputValue}`
+      : `/owned-games/enriched/vanity/${inputValue}`;
 
   fetch(url)
     .then((r) => r.json())

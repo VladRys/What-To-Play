@@ -140,7 +140,7 @@ export function findGames(userState, currentLang) {
     seen_games: seenGames
   };
 
-  fetch("http://127.0.0.1:8000/games/filters", {
+  fetch("/games/filters", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -193,7 +193,7 @@ export function dontCare(currentLang) {
   });
 
   if (hasLibrary) {
-    fetch("http://127.0.0.1:8000/random/library", {
+    fetch("/random/library", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -251,7 +251,7 @@ export function dontCare(currentLang) {
         showErrorPopup(translations[currentLang]["server-error"], currentLang);
       });
   } else {
-    fetch("http://127.0.0.1:8000/random")
+    fetch("/random")
       .then((r) => r.json())
       .then((data) => {
         const game = data.game || {};
