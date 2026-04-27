@@ -74,10 +74,10 @@ export function fetchSteamLibrary(currentLang) {
   $btn
     .prop("disabled", true)
     .html(
-      '<span class="icon-wrapper"><iconify-icon icon="fa-solid:spinner" class="fa-spin"></iconify-icon></span>Loading...',
+      `<span class="icon-wrapper"><iconify-icon icon="fa-solid:spinner" class="fa-spin"></iconify-icon></span>${translations[currentLang].loading}`,
     );
 
-  showLoadingOverlayWithText("Fetching library, stand by...");
+  showLoadingOverlayWithText(translations[currentLang]["fetching-library"]);
 
   const url =
     actualInputType === "id"
@@ -88,7 +88,7 @@ export function fetchSteamLibrary(currentLang) {
     .then((r) => r.json())
     .then((data) => {
       $btn.prop("disabled", false).html(originalText);
-      hideLoadingOverlay();
+      hideLoadingOverlay(currentLang);
 
       if (data.error || data.status === 404) {
         showErrorPopup(
@@ -113,7 +113,7 @@ export function fetchSteamLibrary(currentLang) {
     .catch((error) => {
       console.error("Error fetching Steam library:", error);
       $btn.prop("disabled", false).html(originalText);
-      hideLoadingOverlay();
+      hideLoadingOverlay(currentLang);
       showErrorPopup(translations[currentLang]["server-error"], currentLang);
     });
 }

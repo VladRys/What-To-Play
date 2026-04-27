@@ -115,11 +115,11 @@ export function showLoadingOverlayWithText(text) {
   }
 }
 
-export function hideLoadingOverlay() {
+export function hideLoadingOverlay(currentLang = "en") {
   const overlay = $("#loadingOverlay");
   if (overlay.length) {
     overlay.removeClass("active");
-    $("#loadingText").text("Loading...");
+    $("#loadingText").text(translations[currentLang].loading);
   }
 }
 
