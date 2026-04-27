@@ -22,7 +22,7 @@ A web application that helps users discover new games to play based on Steam sto
 
 ### Docker 
 
-Alternatively, you can run the application using Docker:
+You can run the application using Docker:
 
 1. Build the Docker image with your Steam API key:
    ```bash
