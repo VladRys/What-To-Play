@@ -75,9 +75,41 @@ footer {
   margin-top: 60px;
   color: rgba(255, 255, 255, 0.4);
   font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
 footer p {
   margin: 5px 0;
   font-weight: 400;
+}
+
+.faq-and-github {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.github-repo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.github-repo:hover {
+  transform: scale(1.1);
+}
+
+.github-repo img {
+  opacity: 0.6;
+}
+
+.github-repo:hover img {
+  opacity: 0.9;
 }
