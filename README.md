@@ -1,6 +1,6 @@
 # What to Play
 
-A web application that helps users discover new games to play based on their Steam library.
+A web application that helps users discover new games to play based on Steam store or their own library.
 
 ## Features
 
