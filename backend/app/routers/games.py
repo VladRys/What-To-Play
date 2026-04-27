@@ -13,7 +13,7 @@ def random_game(service = Depends(get_games_service)) -> dict[str, str | dict | 
 @router.post("/random/library")
 def random_game_from_library(request: UserLibraryRequest, service: GameService = Depends(get_games_service)) -> dict | None:
     """Get a random game from user steam library. (Also no Steam API using) no filters"""
-    return service.get_random_game_from_library(request.user_library, request.seen_games)
+    return service.get_random_game_from_library(request.user_library)
 
 @router.post("/games/filters", response_model=FilteredGamesResponse)
 def get_games_with_filters(request: FilteredGamesRequest, logger = Depends(get_logger), game_service: GameService = Depends(get_games_service)) -> FilteredGamesResponse:
