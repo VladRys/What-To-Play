@@ -127,9 +127,53 @@
     </main>
   </div>
 
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-text">Loading...</div>
+  <!-- FAQ Modal -->
+  <div class="faq-overlay" id="faqOverlay">
+    <div class="faq-modal">
+      <div class="faq-header">
+        <h2 data-translate="faq-title">FAQ</h2>
+        <button class="faq-close" id="faqClose">
+          <iconify-icon icon="heroicons:x-mark-20-solid"></iconify-icon>
+        </button>
+      </div>
+      <div class="faq-content">
+        <div class="faq-section">
+          <h3 data-translate="faq-demo-title">Work in Progress</h3>
+          <p data-translate="faq-demo-text">This is a demo version. Some features may not work as expected.</p>
+        </div>
+        <div class="faq-section">
+          <h3 data-translate="faq-steam-title">How to load your Steam library</h3>
+          <p data-translate="faq-steam-text">You can load your Steam library by entering your Steam ID or vanity URL in
+            the field below.</p>
+          <div class="faq-warning">
+            <iconify-icon icon="heroicons:exclamation-triangle-solid"></iconify-icon>
+            <span data-translate="faq-steam-warning">Important: Your Steam profile must be public and your game activity
+              visible, otherwise Steam API will restrict access to your games list.</p>
+          </div>
+          <div class="faq-steps">
+            <h4 data-translate="faq-steps-title">How to find your Steam ID / Vanity URL:</h4>
+            <ol>
+              <li data-translate="faq-step-1">Go to your Steam profile</li>
+              <li data-translate="faq-step-2">Look at the URL - it will show either a custom name (vanity URL) or a
+                17-digit number (Steam ID)</li>
+              <li data-translate="faq-step-3">Copy and paste it into the input field</li>
+              <li data-translate="faq-step-4">Click the checkmark button to fetch your library</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-text" id="loadingText">Loading...</div>
+  </div>
+
+  <footer>
+    <p>© 2026 What To Play — Find your next game.</p>
+    <p>For gamers, by gamers.</p>
+    <button class="faq-btn" id="faqBtn">FAQ</button>
+  </footer>
 </body>
 <script type="module" src="js/main.js"></script>
 

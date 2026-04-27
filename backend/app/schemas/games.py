@@ -17,19 +17,24 @@ class GameFetched(Game):
 class UserLibraryGame(Game):
     playtime_forever: int | None
     img_icon_url: str | None
+    genres: str | None = None
+    categories: str | None = None
+    positive: int | None = None
+    negative: int | None = None
 
 class FilteredGamesRequest(BaseModel):
     is_user_library: bool = False
     user_library: list[UserLibraryGame] = []
     vibe: str | None = None
     player_counts: str | None = None
-    time_perf: str | None = None
+    time_pref: str | None = None
+    seen_games: list[str] = []
     
 class FilteredGamesResponse(BaseModel):
     games: list[Game] | list[GameFetched] | list = []
     vibe: str | None = None
     player_counts: str | None = None
-    time_perf: str | None = None
+    time_pref: str | None = None
     message: str | None = None
     is_user_library: bool | None = False
     status: int = 404
@@ -46,4 +51,6 @@ class GetGameInfoResponse(BaseModel):
     message: str
     status: int
     
+class UserLibraryRequest(BaseModel):
+    user_library: list[UserLibraryGame]
     

@@ -1,4 +1,6 @@
 import logging
+import httpx
+import asyncio
 import requests
 import random
 from backend.app.config import config as cfg
@@ -25,7 +27,16 @@ class GameService:
             "header_image": f"https://cdn.akamai.steamstatic.com/steam/apps/{game['appid']}/header.jpg",
             "status": 200
             }
+    
+    def get_random_game_from_library(self, user_library: list[UserLibraryGame]) -> dict | None:
+        game = random.choice(user_library).model_dump()
+        enhanced_game = self.get_game_info_by_id(game["appid"])
         
+        if isinstance(enhanced_game, GameFetched):
+            return enhanced_game.model_dump()
+        
+        return
+    
     def get_game_info_by_id(self, app_id: int) -> GameFetched | list:
         """Fetch details for a given app ID using Steam API"""
         url = f"https://store.steampowered.com/api/appdetails?appids={app_id}"
@@ -43,6 +54,48 @@ class GameService:
 
         try:
             pos, neg = self.get_reviews(app_id)
+            return GameFetched(
+                appid = app_id,
+                name =  d.get("name"),
+                genres = ",".join([g["description"] for g in d.get("genres", [])]),
+                categories = ",".join([c["description"] for c in d.get("categories", [])]),
+                is_free = d.get("is_free", False),
+                positive = pos,
+                negative = neg,
+                header_image=f"https://cdn.akamai.steamstatic.com/steam/apps/{app_id}/header.jpg"
+            )
+        except Exception as e:
+            self.logger.error(f"Error occured while getting reviews for {app_id}, {d["name"]}: {e}")
+            return GameFetched(
+                appid = app_id,
+                name =  d.get("name"),
+                genres = ",".join([g["description"] for g in d.get("genres", [])]),
+                categories = ",".join([c["description"] for c in d.get("categories", [])]),
+                is_free = d.get("is_free", False),
+                positive = 0,
+                negative = 0,
+                header_image=f"https://cdn.akamai.steamstatic.com/steam/apps/{app_id}/header.jpg"
+            )
+            
+    async def get_game_info_by_id_async(self, app_id: int) -> GameFetched | None:
+        """Fetch details for a given app ID using Steam API asynchronously"""
+        url = f"https://store.steampowered.com/api/appdetails?appids={app_id}"
+        async with httpx.AsyncClient() as client:
+            r = await client.get(url)
+            data = r.json()
+
+        if not data[str(app_id)]["success"]:
+            return None
+
+        d = data[str(app_id)]["data"]
+
+        if d.get("type") != "game":
+            return None
+
+        self.logger.info(f"Fetched details for app {app_id}: {d.get('name', 'Unknown')}")
+
+        try:
+            pos, neg = await self.get_reviews_async(app_id)
             return GameFetched(
                 appid = app_id,
                 name =  d.get("name"),
@@ -95,31 +148,78 @@ class GameService:
             self.logger.warning(f"Error fetching reviews for app {appid}: {str(e)}")
             return (0, 0)
         
-    def get_smart_filtered_games(self, user_libary: list[UserLibraryGame] | list, is_user_library: bool = False, vibe: str | None = None, player_counts: str | None = None, time_pref: str | None = None):
+    async def get_reviews_async(self, appid: int) -> tuple[int, int]:
+        """Fetch review summary for a given app ID using Steam store reviews API asynchronously"""
+        url = f"https://store.steampowered.com/appreviews/{appid}?json=1&num_per_page=0"
+
+        headers = {
+            "User-Agent": "Mozilla/5.0"
+        }
+
+        async with httpx.AsyncClient() as client:
+            r = await client.get(url, headers=headers, timeout=10)
+
+        if r.status_code != 200:
+            print("Bad status:", r.status_code)
+            return (0, 0)
+
+        data = r.json()
+        summary = data.get("query_summary", {})
+
+        self.logger.info(f"Fetched reviews for app {appid}: {summary.get('total_positive', 0)} positive, {summary.get('total_negative', 0)} negative")
+
+        return (
+            summary.get("total_positive", 0),
+            summary.get("total_negative", 0)
+        )
+        
+    async def get_multiple_game_info(self, app_ids: list[int]) -> list[GameFetched]:
+        """Fetch details for multiple app IDs in parallel"""
+        tasks = [self.get_game_info_by_id_async(app_id) for app_id in app_ids]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        valid_results = []
+        for result in results:
+            if isinstance(result, Exception):
+                self.logger.error(f"Error fetching game info: {result}")
+                continue
+            if isinstance(result, GameFetched):
+                valid_results.append(result)
+        return valid_results
+        
+    def get_smart_filtered_games(self, user_libary: list[UserLibraryGame] | list, is_user_library: bool = False, vibe: str | None = None, player_counts: str | None = None, time_pref: str | None = None, seen_games: list[str] = []):
         if cfg.VIBE_CHECKING and vibe not in cfg.VIBES_MAP:
             self.logger.error(f"Unknown vibe: {vibe}")
             raise UnknownVibeException
-        
+
         if is_user_library and user_libary:
             games = []
             for game in user_libary:
                 dumped_game = game.model_dump()
+
                 score = calculate_game_score(dumped_game, vibe, player_counts, time_pref)
                 dumped_game["score"] = score
                 games.append(dumped_game)
 
             games.sort(key=lambda x: x["score"], reverse=True)
 
+            valid_games = [g for g in games if g["score"] > -9999]
+
+            if len(valid_games) == 0:
+                self.logger.warning("No games passed hard filtering, returning top games anyway")
+                valid_games = games[:10]
+
             TOP_K = 150
-            top_games = games[:TOP_K]
+            top_games = valid_games[:TOP_K]
 
             items = random.sample(top_games, min(3, len(top_games)))
-            
+
             result = []
             for item in items:
-                result.append(self.get_game_info_by_id(item['appid']))
+                if not isinstance(item, list):
+                    result.append(self.get_game_info_by_id(item['appid']))
 
-            return result            
+            return result
 
 
         self.logger.info("Smart filtering through local db")
