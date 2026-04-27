@@ -43,10 +43,8 @@ def get_owned_games_enriched_by_id(steam_id: str, steam_user_service: SteamUserS
         logger.warning(f"No owned games found for Steam ID: {steam_id}")
         return {"message": "No owned games found for the provided Steam ID", "status": 404}
 
-    # Sort by playtime to get top played games
     games.sort(key=lambda x: x.get("playtime_forever", 0), reverse=True)
 
-    # Enrich ALL games from Steam Store API
     enriched_count = 0
     for game in games:
         steam_game = game_service.get_game_info_by_id(game['appid'])
@@ -72,10 +70,8 @@ def get_owned_games_enriched(vanity_url: str, steam_user_service: SteamUserServi
         logger.warning(f"No owned games found for vanity URL: {vanity_url}")
         return {"message": "No owned games found for the provided vanity URL", "status": 404}
 
-    # Sort by playtime to get top played games
     games.sort(key=lambda x: x.get("playtime_forever", 0), reverse=True)
 
-    # Enrich ALL games from Steam Store API
     enriched_count = 0
     for game in games:
         steam_game = game_service.get_game_info_by_id(game['appid'])

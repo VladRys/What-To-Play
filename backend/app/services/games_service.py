@@ -114,14 +114,12 @@ class GameService:
             for game in user_libary:
                 dumped_game = game.model_dump()
 
-                # Games are already enriched during library fetch, no need to enrich again
                 score = calculate_game_score(dumped_game, vibe, player_counts, time_pref)
                 dumped_game["score"] = score
                 games.append(dumped_game)
 
             games.sort(key=lambda x: x["score"], reverse=True)
 
-            # Filter out games with score -9999 (hard filtered)
             valid_games = [g for g in games if g["score"] > -9999]
 
             if len(valid_games) == 0:

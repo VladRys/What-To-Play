@@ -1,6 +1,7 @@
 import logging
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from fastapi.responses import JSONResponse
 
@@ -22,6 +23,14 @@ app.add_middleware(
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+class LoggingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        request.state.logger = logger
+        response = await call_next(request)
+        return response
+
+app.add_middleware(LoggingMiddleware)
+
 app.include_router(games_router)
 app.include_router(steam_router)
 
@@ -31,7 +40,6 @@ def home():
     logger.info("Home route accessed")
     return {"message": "API is working"}
 
-# --- Global Exceptions Handler ---
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
     logger = request.state.logger  

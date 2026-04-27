@@ -32,7 +32,9 @@ def calculate_game_score(game: dict, vibe: str | None, mode: str | None, time_pr
             score += cfg.TIME_PROFILES[time_pref].get(genre, 0)
 
     # --- RATING ---
-    pos, neg = game.get("positive", 0), game.get("negative", 0)
+    pos = game.get("positive") or 0
+    neg = game.get("negative") or 0
+    
     total = pos + neg
     if total > 0:
         score += (pos / total) * cfg_scoring["rating_weight"]
