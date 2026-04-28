@@ -26,29 +26,40 @@ class SteamBuilder:
         return requests.get(url, params={"key": api_key}).json()["response"]["apps"]
 
     def get_details(self, appid: int) -> dict | None:
-        """Fetch details for a given app ID using Steam API"""
+        """Fetch details for a given app ID using Steam API with retry logic"""
         url = f"https://store.steampowered.com/api/appdetails?appids={appid}"
-        r = requests.get(url).json()
 
-        if not r[str(appid)]["success"]:
-            return None
+        for attempt in range(3):
+            try:
+                r = requests.get(url, timeout=10)
+                r.raise_for_status()
+                data = r.json()
 
-        d = r[str(appid)]["data"]
+                if not data.get(str(appid), {}).get("success"):
+                    return None
 
-        if d.get("type") != "game":
-            return None
+                d = data[str(appid)]["data"]
 
-        self.logger.info(f"Fetched details for app {appid}: {d.get('name', 'Unknown')}")
+                if d.get("type") != "game":
+                    return None
 
-        return {
-            "appid": appid,
-            "name": d.get("name"),
-            "genres": ",".join([g["description"] for g in d.get("genres", [])]),
-            "categories": ",".join([c["description"] for c in d.get("categories", [])]),
-            "is_free": int(d.get("is_free", False)),
-            "positive": 0,
-            "negative": 0
-        }
+                self.logger.info(f"Fetched details for app {appid}: {d.get('name', 'Unknown')}")
+
+                return {
+                    "appid": appid,
+                    "name": d.get("name"),
+                    "genres": ",".join([g["description"] for g in d.get("genres", [])]),
+                    "categories": ",".join([c["description"] for c in d.get("categories", [])]),
+                    "is_free": int(d.get("is_free", False)),
+                    "positive": 0,
+                    "negative": 0
+                }
+            except Exception as e:
+                self.logger.warning(f"Attempt {attempt + 1} failed for app {appid}: {str(e)}")
+                if attempt < 2:
+                    time.sleep(2 ** attempt)  # Exponential backoff: 1s, 2s, 4s
+                else:
+                    return None
 
     def get_reviews(self, appid: int) -> tuple[int, int]:
         """Fetch review summary for a given app ID using Steam store reviews API"""
@@ -89,7 +100,7 @@ class SteamBuilder:
                 pos, neg = self.get_reviews(app["appid"])
 
                 data["positive"] = pos
-                data["negative"] = neg
+                data["n1tive"] = neg
             except Exception as e:
                 self.logger.warning(f"Error processing game ID {app['appid']}: {str(e)}")
                 continue
@@ -100,10 +111,15 @@ class SteamBuilder:
             if i % 50 == 0:
                 self.logger.info(f"Processed {i} apps")
 
-            time.sleep(0.3)
+            time.sleep(1)
 
 
 def main(limit=1000):
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[logging.StreamHandler()]
+    )
     builder = SteamBuilder(GamesRepository(SqliteDatabase(config.DB_PATH)), logging.getLogger("SteamBuilder"))
     builder.build(config.STEAM_API_KEY, limit=limit)
 
