@@ -114,7 +114,10 @@ class GamesRepository:
 
             self.db.commit()
             
-            self.logger.info(f"Added game to database: {game['name']} (AppID: {game['appid']})")
+            if 'appid' in game and 'name' in game:
+                self.logger.info(f"Added game to database: {game['name']} (AppID: {game['appid']})")
+            else:
+                self.logger.warning(f"Added incomplete game data: {game}")
         
         except Exception as e:
             self.logger.error(f"Error adding game: {str(e)}")

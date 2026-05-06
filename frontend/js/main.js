@@ -129,7 +129,7 @@ $(document).ready(function () {
       }
     });
 
-    $("#steamNickname, #toggleSteamMode, #faqBtn").css({
+    $("#steamNickname, #toggleSteamMode, #steamCheckmark").css({
       filter: "blur(4px)",
       opacity: 0.5,
       transition: "all 0.2s ease",
@@ -166,7 +166,7 @@ $(document).ready(function () {
               clearInterval(write);
               $els.css({ filter: "blur(0)", opacity: 1, width: "" });
               $(".icon").css({ filter: "blur(0)", opacity: 1 });
-              $("#steamNickname, #toggleSteamMode, #faqBtn").css({
+              $("#steamNickname, #toggleSteamMode, #steamCheckmark").css({
                 filter: "blur(0)",
                 opacity: 1,
               });
@@ -262,7 +262,7 @@ $(document).ready(function () {
 
     if (idx === 1) userState.time = text;
     else if (idx === 2) userState.mood = text;
-    else if (idx === 3) userState.single = text === "Solo";
+    else if (idx === 3) userState.single = text === "Solo" || text === "Соло";
 
     console.log(
       `dict user_state = { time = "${userState.time}", mood = "${userState.mood}", single = ${userState.single} }`,
