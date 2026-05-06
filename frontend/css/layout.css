@@ -92,24 +92,3 @@ footer p {
   gap: 12px;
   margin-top: 10px;
 }
-
-.github-repo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.github-repo:hover {
-  transform: scale(1.1);
-}
-
-.github-repo img {
-  opacity: 0.6;
-}
-
-.github-repo:hover img {
-  opacity: 0.9;
-}

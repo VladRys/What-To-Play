@@ -351,6 +351,10 @@ $(document).ready(function () {
     $("#faqOverlay").addClass("active");
   });
 
+  $("#githubBtn").on("click", function () {
+    window.open("https://github.com/VladRys/What-To-Play/tree/main", "_blank");
+  });
+
   $("#faqClose").on("click", function () {
     $("#faqOverlay").removeClass("active");
   });
