@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WhatToPlay</title>
+  <link rel="icon" type="image/svg+xml" href="img/gamepad.svg" />
   <link rel="stylesheet" href="css/main.css" />
   <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
   <script src="https://code.jquery.com/jquery-4.0.0.min.js"
@@ -166,15 +167,24 @@
   </div>
 
   <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-text" id="loadingText">Loading...</div>
+    <div class="loading-text" id="loadingText" data-translate="loading">Loading...</div>
   </div>
 
   <footer>
     <p>© 2026 What To Play — Find your next game.</p>
     <p>For gamers, by gamers.</p>
-    <button class="faq-btn" id="faqBtn">FAQ</button>
+    <div class="faq-and-github">
+      <button class="faq-btn" id="faqBtn" data-tooltip="Frequently Asked Questions">FAQ</button>
+      <a href="https://github.com/VladRys/What-To-Play/issues" target="_blank" class="github-repo bug-report-btn"
+        data-tooltip="Report a bug on GitHub">
+        <iconify-icon icon="simple-icons:github"></iconify-icon> Found a bug?
+      </a>
+      <button class="github-repo" id="githubBtn" data-tooltip="View source code on GitHub">
+        <iconify-icon icon="simple-icons:github"></iconify-icon> GitHub
+      </button>
+    </div>
   </footer>
 </body>
-<script type="module" src="js/main.js"></script>
+<script type="module" src="js/main.js?v=3"></script>
 
 </html>

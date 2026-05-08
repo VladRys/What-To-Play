@@ -1,7 +1,7 @@
 import { moodToVibe, translations, timeToDuration } from "./config.js";
 import { showErrorPopup, showSuccessPopup, resetPopupVisible, showLoadingOverlay, hideLoadingOverlay } from "./ui.js";
 
-export function displayGames(games, duration = null) {
+export function displayGames(games, duration = null, currentLang = "en") {
   const seenGames = new Set(
     localStorage.getItem("seenGames")?.split(",") || [],
   );
@@ -89,7 +89,7 @@ export function displayGames(games, duration = null) {
 
   const maxDelay = 50 + games.length * 150;
   setTimeout(() => {
-    hideLoadingOverlay();
+    hideLoadingOverlay(currentLang);
   }, maxDelay + 500);
 
   $("#checkRequirements")
@@ -140,7 +140,7 @@ export function findGames(userState, currentLang) {
     seen_games: seenGames
   };
 
-  fetch("http://127.0.0.1:8000/games/filters", {
+  fetch("/games/filters", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -150,7 +150,7 @@ export function findGames(userState, currentLang) {
     .then((r) => r.json())
     .then((data) => {
       if (data.error) {
-        hideLoadingOverlay();
+        hideLoadingOverlay(currentLang);
         resetPopupVisible();
         showErrorPopup(
           data.message || "Failed to fetch games",
@@ -162,7 +162,7 @@ export function findGames(userState, currentLang) {
       const games = data.games || [];
 
       if (games.length === 0) {
-        hideLoadingOverlay();
+        hideLoadingOverlay(currentLang);
         resetPopupVisible();
         showErrorPopup("No games found", currentLang);
         return;
@@ -170,11 +170,11 @@ export function findGames(userState, currentLang) {
 
       const gamesToShow = games.slice(0, 3);
 
-      displayGames(gamesToShow, duration);
+      displayGames(gamesToShow, duration, currentLang);
     })
     .catch((error) => {
       console.error("Error fetching games:", error);
-      hideLoadingOverlay();
+      hideLoadingOverlay(currentLang);
       resetPopupVisible();
       showErrorPopup(translations[currentLang]["server-error"], currentLang);
     });
@@ -193,7 +193,7 @@ export function dontCare(currentLang) {
   });
 
   if (hasLibrary) {
-    fetch("http://127.0.0.1:8000/random/library", {
+    fetch("/random/library", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -241,17 +241,17 @@ export function dontCare(currentLang) {
         }, 50);
 
         setTimeout(() => {
-          hideLoadingOverlay();
+          hideLoadingOverlay(currentLang);
         }, 650);
       })
       .catch((error) => {
         console.error("Error fetching random game from library:", error);
-        hideLoadingOverlay();
+        hideLoadingOverlay(currentLang);
         resetPopupVisible();
         showErrorPopup(translations[currentLang]["server-error"], currentLang);
       });
   } else {
-    fetch("http://127.0.0.1:8000/random")
+    fetch("/random")
       .then((r) => r.json())
       .then((data) => {
         const game = data.game || {};
@@ -290,11 +290,11 @@ export function dontCare(currentLang) {
         }, 50);
 
         setTimeout(() => {
-          hideLoadingOverlay();
+          hideLoadingOverlay(currentLang);
         }, 650);
       })
       .catch((error) => {
-        hideLoadingOverlay();
+        hideLoadingOverlay(currentLang);
         resetPopupVisible();
         showErrorPopup(translations[currentLang]["server-error"], currentLang);
       });

@@ -57,7 +57,7 @@ You can run the application using Docker:
 3. Create a `.env` file in the `backend/app` directory with your Steam API key:
 
    ```
-   STEAM_API_KEY=your_steam_api_key_here
+   STEAM_DEVELOPER_KEY=your_steam_api_key_here
    DB_PATH=app.db
    ```
 4. Build the local games database (this may take several minutes):
@@ -155,7 +155,7 @@ what-to-play/
 
 The application uses the following environment variables:
 
-- `STEAM_API_KEY` - Your Steam Web API key (get from https://steamcommunity.com/dev/apikey)
+- `STEAM_DEVELOPER_KEY` - Your Steam Web API key (get from https://steamcommunity.com/dev/apikey)
 - `DB_PATH` - Path to SQLite database file (default: `backend/app/db/steam_games.db`)
 
 ## Development

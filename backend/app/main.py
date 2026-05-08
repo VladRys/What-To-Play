@@ -1,6 +1,8 @@
 import logging
+from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from fastapi.responses import JSONResponse
@@ -34,11 +36,15 @@ app.add_middleware(LoggingMiddleware)
 app.include_router(games_router)
 app.include_router(steam_router)
 
-@app.get("/")
-def home():
-    """Test route to check if API is working"""
-    logger.info("Home route accessed")
-    return {"message": "API is working"}
+# Mount frontend as static files
+frontend_path = Path(__file__).parent.parent.parent / "frontend"
+app.mount("/", StaticFiles(directory=str(frontend_path), html=True), name="frontend")
+
+@app.get("/api/health")
+def health():
+    """Health check endpoint"""
+    logger.info("Health check accessed")
+    return {"status": "ok"}
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
