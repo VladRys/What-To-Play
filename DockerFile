@@ -14,11 +14,11 @@ COPY . .
 ENV DB_PATH=/app/app.db
 
 # Build argument for Steam API key
-ARG STEAM_API_KEY
-ENV STEAM_API_KEY=${STEAM_API_KEY}
+ARG STEAM_DEVELOPER_KEY
+ENV STEAM_DEVELOPER_KEY=${STEAM_DEVELOPER_KEY}
 
-# Build the database (requires STEAM_API_KEY)
-RUN if [ -n "$STEAM_API_KEY" ]; then python -m backend.app.services.steam_db_builder; else echo "Warning: STEAM_API_KEY not provided, database will not be built"; fi
+# Build the database (requires STEAM_DEVELOPER_KEY)
+RUN if [ -n "$STEAM_DEVELOPER_KEY" ]; then python -m backend.app.services.steam_db_builder; else echo "Warning: STEAM_DEVELOPER_KEY not provided, database will not be built"; fi
 
 # Expose port
 EXPOSE 8000
