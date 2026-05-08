@@ -26,7 +26,7 @@ You can run the application using Docker:
 
 1. Build the Docker image with your Steam API key:
    ```bash
-   docker build --build-arg STEAM_API_KEY=your_steam_api_key_here -t what-to-play .
+   docker build --build-arg STEAM_DEVELOPER_KEY=your_steam_api_key_here -t what-to-play .
    ```
 
 2. Run the container:
@@ -38,7 +38,7 @@ You can run the application using Docker:
    - Open `frontend/index.html` in your web browser
    - Or serve the frontend files with a web server
 
-> **Note**: Building the Docker image will automatically populate the database with game data. If you skip the `STEAM_API_KEY` build arg, you'll need to build the database manually after running the container.
+> **Note**: Building the Docker image will automatically populate the database with game data. If you skip the `STEAM_DEVELOPER_KEY` build arg, you'll need to build the database manually after running the container.
 
 ### Installation without Docker
 
