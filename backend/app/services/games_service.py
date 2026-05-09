@@ -192,6 +192,9 @@ class GameService:
             self.logger.error(f"Unknown vibe: {vibe}")
             raise UnknownVibeException
 
+        # Filter empty strings from seen_games and convert to set for O(1) lookup
+        seen_appids = set(str(appid) for appid in seen_games if appid and str(appid).strip())
+
         if is_user_library and user_libary:
             games = []
             for game in user_libary:
@@ -209,15 +212,26 @@ class GameService:
                 self.logger.warning("No games passed hard filtering, returning top games anyway")
                 valid_games = games[:10]
 
-            TOP_K = 150
-            top_games = valid_games[:TOP_K]
+            # Use actual library size instead of fixed TOP_K
+            top_games = valid_games
 
-            items = random.sample(top_games, min(3, len(top_games)))
+            # Filter out seen games
+            available_games = [g for g in top_games if str(g['appid']) not in seen_appids]
+            
+            # If not enough games after filtering, use all valid games (not just top_games)
+            if len(available_games) < 3:
+                self.logger.warning(f"Not enough games after filtering seen_games, using all valid games")
+                available_games = valid_games
+
+            items = random.sample(available_games, min(3, len(available_games)))
 
             result = []
             for item in items:
                 if not isinstance(item, list):
-                    result.append(self.get_game_info_by_id(item['appid']))
+                    game_info = self.get_game_info_by_id(item['appid'])
+                    # Only add non-empty results
+                    if game_info and not isinstance(game_info, list):
+                        result.append(game_info)
 
             return result
 

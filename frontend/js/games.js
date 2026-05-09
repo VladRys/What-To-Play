@@ -129,11 +129,11 @@ export function findGames(userState, currentLang) {
     isUserLibrary: isUserLibrary
   });
 
-  const seenGames = localStorage.getItem("seenGames")?.split(",") || [];
+  const seenGames = (localStorage.getItem("seenGames")?.split(",") || []).filter(id => id && id.trim());
 
   const payload = {
     vibe: vibeToSend,
-    time_perf: duration,
+    time_pref: duration,
     player_counts: players,
     is_user_library: isUserLibrary,
     user_library: userLibrary,
