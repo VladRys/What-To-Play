@@ -223,15 +223,24 @@ class GameService:
                 self.logger.warning(f"Not enough games after filtering seen_games, using all valid games")
                 available_games = valid_games
 
+            self.logger.info(f"Available games count: {len(available_games)}")
+            self.logger.info(f"Seen games: {seen_appids}")
+
             items = random.sample(available_games, min(3, len(available_games)))
+            self.logger.info(f"Selected items for processing: {[item.get('appid') for item in items]}")
 
             result = []
             for item in items:
                 if not isinstance(item, list):
-                    game_info = self.get_game_info_by_id(item['appid'])
+                    appid = item['appid']
+                    self.logger.info(f"Getting game info for appid: {appid}")
+                    game_info = self.get_game_info_by_id(appid)
+                    self.logger.info(f"Game info result for {appid}: {type(game_info)}, content: {game_info}")
                     # Only add non-empty results
                     if game_info and not isinstance(game_info, list):
                         result.append(game_info)
+                    else:
+                        self.logger.warning(f"Skipping game {appid} due to empty or list result")
 
             return result
 
