@@ -130,7 +130,7 @@ export function findGames(userState, currentLang) {
   });
 
   let seenGames = (localStorage.getItem("seenGames")?.split(",") || []).filter(id => id && id.trim());
-  
+
   // Keep only last 50 seen games to prevent overfiltering
   if (seenGames.length > 50) {
     seenGames = seenGames.slice(-50);
@@ -177,6 +177,17 @@ export function findGames(userState, currentLang) {
       const gamesToShow = games.slice(0, 3);
 
       displayGames(gamesToShow, duration, currentLang);
+
+      // Smooth scroll to game results after a short delay
+      setTimeout(() => {
+        const gameResult = document.getElementById("gameResult");
+        if (gameResult) {
+          gameResult.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        }
+      }, 300);
     })
     .catch((error) => {
       console.error("Error fetching games:", error);
