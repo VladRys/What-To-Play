@@ -129,7 +129,13 @@ export function findGames(userState, currentLang) {
     isUserLibrary: isUserLibrary
   });
 
-  const seenGames = (localStorage.getItem("seenGames")?.split(",") || []).filter(id => id && id.trim());
+  let seenGames = (localStorage.getItem("seenGames")?.split(",") || []).filter(id => id && id.trim());
+  
+  // Keep only last 50 seen games to prevent overfiltering
+  if (seenGames.length > 50) {
+    seenGames = seenGames.slice(-50);
+    localStorage.setItem("seenGames", seenGames.join(","));
+  }
 
   const payload = {
     vibe: vibeToSend,

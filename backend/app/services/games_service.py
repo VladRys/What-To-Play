@@ -41,13 +41,17 @@ class GameService:
         """Fetch details for a given app ID using Steam API"""
         url = f"https://store.steampowered.com/api/appdetails?appids={app_id}"
         r = requests.get(url).json()
+        
+        self.logger.info(f"Steam API response for {app_id}: {r.get(str(app_id), {})}")
 
         if not r[str(app_id)]["success"]:
+            self.logger.warning(f"Steam API returned success=False for app {app_id}")
             return []
 
         d = r[str(app_id)]["data"]
 
         if d.get("type") != "game":
+            self.logger.warning(f"App {app_id} is not a game, type: {d.get('type')}")
             return []
 
         self.logger.info(f"Fetched details for app {app_id}: {d.get('name', 'Unknown')}")
@@ -192,8 +196,13 @@ class GameService:
             self.logger.error(f"Unknown vibe: {vibe}")
             raise UnknownVibeException
 
-        # Filter empty strings from seen_games and convert to set for O(1) lookup
-        seen_appids = set(str(appid) for appid in seen_games if appid and str(appid).strip())
+        # When using user library, reset seen_games to avoid overfiltering
+        if is_user_library:
+            seen_appids = set()
+            self.logger.info("Reset seen_games for user library filtering")
+        else:
+            # Filter empty strings from seen_games and convert to set for O(1) lookup
+            seen_appids = set(str(appid) for appid in seen_games if appid and str(appid).strip())
 
         if is_user_library and user_libary:
             games = []
@@ -233,14 +242,33 @@ class GameService:
             for item in items:
                 if not isinstance(item, list):
                     appid = item['appid']
-                    self.logger.info(f"Getting game info for appid: {appid}")
+                    self.logger.info(f"Processing game for appid: {appid}")
+                    
+                    # First try to get from Steam API
                     game_info = self.get_game_info_by_id(appid)
-                    self.logger.info(f"Game info result for {appid}: {type(game_info)}, content: {game_info}")
-                    # Only add non-empty results
+                    
+                    # If Steam API fails, use existing data from user library
                     if game_info and not isinstance(game_info, list):
                         result.append(game_info)
+                        self.logger.info(f"Used Steam API data for {appid}")
                     else:
-                        self.logger.warning(f"Skipping game {appid} due to empty or list result")
+                        # Use existing data from user library
+                        self.logger.warning(f"Steam API failed for {appid}, using existing library data")
+                        library_game = next((g for g in user_libary if g.appid == appid), None)
+                        if library_game:
+                            result.append(GameFetched(
+                                appid=library_game.appid,
+                                name=library_game.name,
+                                genres=library_game.genres or "",
+                                categories=library_game.categories or "",
+                                is_free=False,
+                                positive=library_game.positive or 0,
+                                negative=library_game.negative or 0,
+                                header_image=f"https://cdn.akamai.steamstatic.com/steam/apps/{appid}/header.jpg"
+                            ))
+                            self.logger.info(f"Used library data for {appid}: {library_game.name}")
+                        else:
+                            self.logger.error(f"Game {appid} not found in library either")
 
             return result
 
