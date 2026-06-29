@@ -146,7 +146,7 @@ export function findGames(userState, currentLang) {
     seen_games: seenGames
   };
 
-  fetch("/games/filters", {
+  fetch("https://what-to-play.onrender.com/games/filters", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -210,7 +210,7 @@ export function dontCare(currentLang) {
   });
 
   if (hasLibrary) {
-    fetch("/random/library", {
+    fetch("https://what-to-play.onrender.com/random/library", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -268,7 +268,7 @@ export function dontCare(currentLang) {
         showErrorPopup(translations[currentLang]["server-error"], currentLang);
       });
   } else {
-    fetch("/random")
+    fetch("https://what-to-play.onrender.com/random")
       .then((r) => r.json())
       .then((data) => {
         const game = data.game || {};
